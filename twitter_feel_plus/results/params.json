@@ -1,0 +1,12 @@
+{
+  "source_csv": "data\\interim\\dataset_godknowswhat.csv",
+  "sadness_label": "sadness",
+  "tweet_window": 20,
+  "day_window_days": 14,
+  "abs_threshold": 0.4,
+  "dev_threshold": 0.15,
+  "min_sustained": 3,
+  "n_users": 72,
+  "n_flag_periods": 24,
+  "users_with_at_least_one_flag": 5
+}

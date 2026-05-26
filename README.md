@@ -23,14 +23,18 @@ Binary valence collapse used in some experiments:
 ## Repository layout
 
 ```
-data/raw/        source data (Mental-Health-Twitter.xls, cleaned_*.xls)
-data/interim/    generated artifacts (embeddings, windowed npz, ...)  -- gitignored
-src/             all Python scripts + paths.py (shared filesystem layout)
-models/          *.keras (trained model checkpoints)
-metrics/         metrics_*.json (one per trained model)
-docs/            FINDINGS.md (investigation), handoff.md (handoff notes),
-                 CAP4773_fin_1.ipynb (original course notebook)
-requirements.txt pinned deps (TF 2.16+ for Python 3.12 wheels)
+data/raw/          source data (Mental-Health-Twitter.xls, cleaned_*.xls)
+data/interim/      generated artifacts (embeddings, windowed npz, ...)  -- gitignored
+src/               all Python scripts + paths.py (shared filesystem layout)
+models/            *.keras (trained model checkpoints)
+metrics/           metrics_*.json (one per trained model)
+docs/              FINDINGS.md (investigation), handoff.md (handoff notes),
+                   CAP4773_fin_1.ipynb (original course notebook)
+twitter_feel_plus/ companion subproject: rolling sustained-sadness signal
+                   detection over the DistilBERT-labeled corpus (research
+                   artifact, NOT a clinical or diagnostic tool — see its
+                   README for caveats)
+requirements.txt   pinned deps (TF 2.16+ for Python 3.12 wheels)
 ```
 
 ## Quick start
