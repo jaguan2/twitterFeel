@@ -155,26 +155,30 @@ Roughly in expected-impact order:
 
 ## Reproducing
 
+All commands run from the repo root. Scripts live in `src/` and import
+filesystem paths from `src/paths.py`; data, models, and metrics are written
+to `data/interim/`, `models/`, and `metrics/`.
+
 ```bash
 pip install -r requirements.txt
 
 # V1 (notebook-equivalent pipeline)
-python generate_dataset.py        # ~15 min on CPU
-python preprocess.py
-python train.py                   # ~30 s
+python src/generate_dataset.py        # ~15 min on CPU
+python src/preprocess.py
+python src/train.py                   # ~30 s
 
 # V2 (text embeddings + sliding window)
-python generate_embeddings.py     # ~5-10 min on CPU
-python preprocess_v2.py
-python train_v2.py                # ~2 min
+python src/generate_embeddings.py     # ~5-10 min on CPU
+python src/preprocess_v2.py
+python src/train_v2.py                # ~2 min
 
 # Binary valence (positive vs negative)
-python train_binary.py            # user-level (honest) split
-python train_leaky_binary.py      # row-level (leaky) split for comparison
+python src/train_binary.py            # user-level (honest) split
+python src/train_leaky_binary.py      # row-level (leaky) split for comparison
 ```
 
 Final metrics live in
-[metrics.json](metrics.json),
-[metrics_v2.json](metrics_v2.json),
-[metrics_binary.json](metrics_binary.json), and
-[metrics_leaky_binary.json](metrics_leaky_binary.json).
+[../metrics/metrics.json](../metrics/metrics.json),
+[../metrics/metrics_v2.json](../metrics/metrics_v2.json),
+[../metrics/metrics_binary.json](../metrics/metrics_binary.json), and
+[../metrics/metrics_leaky_binary.json](../metrics/metrics_leaky_binary.json).

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m pip install --upgrade pip)",
+      "Bash(python -m pip install -r requirements.txt)",
+      "Bash(echo \"INSTALL_DONE exit=$?\")"
+    ]
+  }
+}

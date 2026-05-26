@@ -1,7 +1,9 @@
 pandas>=2.0
-numpy>=1.24
+numpy>=1.24,<2.0
 scikit-learn>=1.3
 imbalanced-learn>=0.12
-tensorflow>=2.15,<2.16
+# Bumped from 2.15 because TF 2.15 lacks Python 3.12 wheels.
+# 2.16+ supports Python 3.12 and is API-compatible for everything this repo uses.
+tensorflow>=2.16,<2.18
 transformers>=4.40
 torch>=2.2

@@ -1,11 +1,16 @@
-"""V3 training: configurable task (6-class or binary) and architecture
+"""V3 training: configurable task (6-class / 4-class / binary) and architecture
 (LSTM or BiLSTM+attention) over the V3 feature windows.
 
 Usage:
     python train_v3.py windows_v3_w10.npz                      # 6-class, LSTM
+    python train_v3.py windows_v3_w10.npz --four-class         # 4-class (drop love/surprise), LSTM
     python train_v3.py windows_v3_w10.npz --binary             # binary, LSTM
     python train_v3.py windows_v3_w10.npz --binary --bilstm    # binary, BiLSTM+attention
     python train_v3.py windows_v3_w16.npz --bilstm             # 6-class, BiLSTM+attention, larger window
+
+The --four-class flag drops the two rarest emotions (love=2, surprise=5,
+together <300 windows) and remaps the rest to a dense {0,1,2,3} label space:
+sadness->0, joy->1, anger->2, fear->3.
 
 Saves model + metrics with a descriptive suffix encoding (npz stem, task, arch).
 """
@@ -33,6 +38,12 @@ NUM_EMOTIONS = 6
 EMOTION_NAMES = ["sadness", "joy", "love", "anger", "fear", "surprise"]
 POSITIVE_CLASSES = {1, 2, 5}
 
+# 4-class collapse: drop love(2) + surprise(5); remap sadness/joy/anger/fear to 0..3
+FOUR_CLASS_KEEP = [0, 1, 3, 4]
+FOUR_CLASS_NAMES = ["sadness", "joy", "anger", "fear"]
+FOUR_CLASS_REMAP = {orig: new for new, orig in enumerate(FOUR_CLASS_KEEP)}
+DROPPED_SENTINEL = -1  # last_emo values that fall outside FOUR_CLASS_KEEP
+
 RANDOM_SEED = 42
 TRAIN_FRAC = 0.70
 VAL_FRAC = 0.15
@@ -40,6 +51,14 @@ VAL_FRAC = 0.15
 
 def to_binary(y: np.ndarray) -> np.ndarray:
     return np.isin(y, list(POSITIVE_CLASSES)).astype(np.int64)
+
+
+def remap_four_class(y: np.ndarray) -> np.ndarray:
+    """Map kept classes to {0,1,2,3}; map anything else to DROPPED_SENTINEL."""
+    out = np.full_like(y, DROPPED_SENTINEL)
+    for orig, new in FOUR_CLASS_REMAP.items():
+        out[y == orig] = new
+    return out
 
 
 def user_level_split(user_ids, seed):
@@ -107,7 +126,14 @@ def build_bilstm_attention(input_shape, num_classes, binary):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("npz", type=str, help="Path to windows_v3_w*.npz")
-    parser.add_argument("--binary", action="store_true", help="Binary valence task")
+    task_group = parser.add_mutually_exclusive_group()
+    task_group.add_argument("--binary", action="store_true", help="Binary valence task")
+    task_group.add_argument(
+        "--four-class",
+        dest="four_class",
+        action="store_true",
+        help="4-class task: drop love + surprise, remap remaining to 0..3",
+    )
     parser.add_argument(
         "--bilstm",
         action="store_true",
@@ -121,7 +147,12 @@ def main():
     npz_path = npz_arg if npz_arg.is_absolute() or npz_arg.parent != Path(".") else DATA_INTERIM / npz_arg.name
     stem = npz_path.stem  # e.g. windows_v3_w10
     arch = "bilstm" if args.bilstm else "lstm"
-    task = "binary" if args.binary else "6cls"
+    if args.binary:
+        task = "binary"
+    elif args.four_class:
+        task = "4cls"
+    else:
+        task = "6cls"
     tag = f"{stem}_{task}_{arch}"
     model_out = MODELS_DIR / f"emotion_{tag}.keras"
     metrics_out = METRICS_DIR / f"metrics_{tag}.json"
@@ -135,8 +166,26 @@ def main():
     last_emo_multi = data["last_emotion"]
     print(f"Loaded {npz_path.name}  X={X.shape}  task={task}  arch={arch}")
 
-    y = to_binary(y_multi) if args.binary else y_multi
-    last_emo = to_binary(last_emo_multi) if args.binary else last_emo_multi
+    if args.four_class:
+        # Drop windows whose target is love(2) or surprise(5), then remap labels.
+        keep_mask = np.isin(y_multi, FOUR_CLASS_KEEP)
+        kept = int(keep_mask.sum())
+        print(
+            f"4-class filter: kept {kept:,}/{len(y_multi):,} windows "
+            f"({100 * kept / len(y_multi):.1f}%)"
+        )
+        X = X[keep_mask]
+        y_multi = y_multi[keep_mask]
+        user_ids = user_ids[keep_mask]
+        last_emo_multi = last_emo_multi[keep_mask]
+        y = remap_four_class(y_multi)
+        last_emo = remap_four_class(last_emo_multi)  # may contain DROPPED_SENTINEL
+    elif args.binary:
+        y = to_binary(y_multi)
+        last_emo = to_binary(last_emo_multi)
+    else:
+        y = y_multi
+        last_emo = last_emo_multi
 
     train_idx, val_idx, test_idx = user_level_split(user_ids, RANDOM_SEED)
     X_tr, y_tr = X[train_idx], y[train_idx]
@@ -150,6 +199,8 @@ def main():
 
     if args.binary:
         classes = np.array([0, 1])
+    elif args.four_class:
+        classes = np.arange(len(FOUR_CLASS_KEEP))
     else:
         classes = np.arange(NUM_EMOTIONS)
     present = np.array([c for c in classes if (y_tr == c).any()])
@@ -160,7 +211,7 @@ def main():
     print("Class weights:", class_weight)
 
     builder = build_bilstm_attention if args.bilstm else build_lstm
-    model = builder(X.shape[1:], NUM_EMOTIONS, args.binary)
+    model = builder(X.shape[1:], len(classes), args.binary)
     model.summary()
 
     callbacks = [
@@ -193,8 +244,12 @@ def main():
         prob = model.predict(X_te, verbose=0)
         pred = prob.argmax(axis=-1)
         roc_auc = None
-        target_names = EMOTION_NAMES
-        labels = list(range(NUM_EMOTIONS))
+        if args.four_class:
+            target_names = FOUR_CLASS_NAMES
+            labels = list(range(len(FOUR_CLASS_KEEP)))
+        else:
+            target_names = EMOTION_NAMES
+            labels = list(range(NUM_EMOTIONS))
         binary_f1 = None
 
     report = classification_report(
