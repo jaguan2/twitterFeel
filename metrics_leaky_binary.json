@@ -1,0 +1,25 @@
+{
+  "task": "binary_valence",
+  "evaluation_protocol": "leaky_row_level_split",
+  "warning": "Row-level split: same user's windows can appear in both train and test. Numbers inflate via per-user style memorization.",
+  "accuracy": 0.594834232845027,
+  "weighted_f1": 0.5948274157999188,
+  "binary_f1_positive": 0.5763804917372027,
+  "roc_auc": 0.6398345992103976,
+  "baselines": {
+    "majority_class": 0,
+    "majority_acc": 0.5215882806476484,
+    "persistence_acc": 0.5717039321511179
+  },
+  "report": "              precision    recall  f1-score   support\n\n    negative     0.6115    0.6120    0.6117      1353\n    positive     0.5766    0.5761    0.5764      1241\n\n    accuracy                         0.5948      2594\n   macro avg     0.5941    0.5941    0.5941      2594\nweighted avg     0.5948    0.5948    0.5948      2594\n",
+  "confusion_matrix": [
+    [
+      828,
+      525
+    ],
+    [
+      526,
+      715
+    ]
+  ]
+}

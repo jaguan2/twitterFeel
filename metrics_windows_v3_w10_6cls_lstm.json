@@ -1,0 +1,67 @@
+{
+  "tag": "windows_v3_w10_6cls_lstm",
+  "npz": "windows_v3_w10.npz",
+  "task": "6cls",
+  "arch": "lstm",
+  "accuracy": 0.38869625520110956,
+  "weighted_f1": 0.37912249877807763,
+  "macro_f1": 0.17247939562795425,
+  "binary_f1_positive": null,
+  "roc_auc": null,
+  "baselines": {
+    "majority_class": 1,
+    "majority_acc": 0.40499306518723993,
+    "persistence_acc": 0.40048543689320387
+  },
+  "report": "              precision    recall  f1-score   support\n\n     sadness     0.0864    0.0329    0.0476       213\n         joy     0.4819    0.2389    0.3194      1168\n        love     0.0213    0.0820    0.0338        61\n       anger     0.4724    0.6327    0.5409      1285\n        fear     0.0756    0.1214    0.0932       140\n    surprise     0.0000    0.0000    0.0000        17\n\n    accuracy                         0.3887      2884\n   macro avg     0.1896    0.1846    0.1725      2884\nweighted avg     0.4161    0.3887    0.3791      2884\n",
+  "confusion_matrix": [
+    [
+      7,
+      39,
+      22,
+      133,
+      11,
+      1
+    ],
+    [
+      32,
+      279,
+      98,
+      665,
+      80,
+      14
+    ],
+    [
+      2,
+      12,
+      5,
+      35,
+      6,
+      1
+    ],
+    [
+      33,
+      207,
+      98,
+      813,
+      111,
+      23
+    ],
+    [
+      6,
+      35,
+      10,
+      68,
+      17,
+      4
+    ],
+    [
+      1,
+      7,
+      2,
+      7,
+      0,
+      0
+    ]
+  ]
+}
