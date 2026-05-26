@@ -11,7 +11,6 @@ Writes:
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -21,11 +20,12 @@ from sklearn.utils.class_weight import compute_class_weight
 from tensorflow import keras
 from tensorflow.keras import layers
 
-REPO_ROOT = Path(__file__).resolve().parent
-INPUT_MATRIX = REPO_ROOT / "filtered_input_matrix.csv"
-USER_IDS = REPO_ROOT / "user_ids.csv"
-MODEL_OUT = REPO_ROOT / "emotion_lstm.keras"
-METRICS_OUT = REPO_ROOT / "metrics.json"
+from paths import DATA_INTERIM, METRICS_DIR, MODELS_DIR
+
+INPUT_MATRIX = DATA_INTERIM / "filtered_input_matrix.csv"
+USER_IDS = DATA_INTERIM / "user_ids.csv"
+MODEL_OUT = MODELS_DIR / "emotion_lstm.keras"
+METRICS_OUT = METRICS_DIR / "metrics.json"
 
 NUM_EMOTIONS = 6
 TIMESTEPS = 9

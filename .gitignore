@@ -3,16 +3,14 @@
 # so they MUST stay out of git or pushes will be rejected.
 # Comments must be on their own lines (gitignore does not support inline comments).
 
-# Heavy regenerable artifacts
-tweet_embeddings.npy
-windows_v2.npz
-windows_v3_w10.npz
-windows_v3_w16.npz
-windows_v3_w*.npz
+# Heavy regenerable artifacts (live under data/interim/)
+data/interim/tweet_embeddings.npy
+data/interim/windows_v2.npz
+data/interim/windows_v3_w*.npz
 
 # Small regenerables
-filtered_input_matrix.csv
-user_ids.csv
+data/interim/filtered_input_matrix.csv
+data/interim/user_ids.csv
 
 # HuggingFace download cache (per-user)
 .cache/

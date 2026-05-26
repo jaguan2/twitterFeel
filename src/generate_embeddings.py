@@ -8,17 +8,16 @@ Output: tweet_embeddings.npy, shape (n_rows, 384), float32.
 """
 from __future__ import annotations
 
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn.functional as F
 from transformers import AutoModel, AutoTokenizer
 
-REPO_ROOT = Path(__file__).resolve().parent
-INPUT_CSV = REPO_ROOT / "dataset_godknowswhat.csv"
-OUTPUT_NPY = REPO_ROOT / "tweet_embeddings.npy"
+from paths import DATA_INTERIM
+
+INPUT_CSV = DATA_INTERIM / "dataset_godknowswhat.csv"
+OUTPUT_NPY = DATA_INTERIM / "tweet_embeddings.npy"
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 BATCH_SIZE = 64
 MAX_LENGTH = 128

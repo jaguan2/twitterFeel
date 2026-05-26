@@ -21,14 +21,14 @@ context. Outputs windows_v3_w{N}.npz.
 from __future__ import annotations
 
 import sys
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-REPO_ROOT = Path(__file__).resolve().parent
-INPUT_CSV = REPO_ROOT / "dataset_godknowswhat.csv"
-INPUT_EMB = REPO_ROOT / "tweet_embeddings.npy"
+from paths import DATA_INTERIM
+
+INPUT_CSV = DATA_INTERIM / "dataset_godknowswhat.csv"
+INPUT_EMB = DATA_INTERIM / "tweet_embeddings.npy"
 
 EMBED_DIM = 384
 EXTRA_PER_STEP = 7
@@ -43,7 +43,7 @@ def overnight_tweet(hour: int) -> int:
 
 def main(window: int) -> None:
     history = window - 1
-    out_path = REPO_ROOT / f"windows_v3_w{window}.npz"
+    out_path = DATA_INTERIM / f"windows_v3_w{window}.npz"
 
     df = pd.read_csv(INPUT_CSV)
     embeddings = np.load(INPUT_EMB)

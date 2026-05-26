@@ -1,0 +1,27 @@
+{
+  "tag": "windows_v3_w10_binary_bilstm",
+  "npz": "windows_v3_w10.npz",
+  "task": "binary",
+  "arch": "bilstm",
+  "accuracy": 0.5714285714285714,
+  "weighted_f1": 0.5597383072728693,
+  "macro_f1": 0.5447625440407282,
+  "binary_f1_positive": 0.434583714547118,
+  "roc_auc": 0.5735339655885402,
+  "baselines": {
+    "majority_class": 0,
+    "majority_acc": 0.5679611650485437,
+    "persistence_acc": 0.542995839112344
+  },
+  "report": "              precision    recall  f1-score   support\n\n    negative     0.6034    0.7161    0.6549      1638\n    positive     0.5053    0.3812    0.4346      1246\n\n    accuracy                         0.5714      2884\n   macro avg     0.5544    0.5487    0.5448      2884\nweighted avg     0.5610    0.5714    0.5597      2884\n",
+  "confusion_matrix": [
+    [
+      1173,
+      465
+    ],
+    [
+      771,
+      475
+    ]
+  ]
+}

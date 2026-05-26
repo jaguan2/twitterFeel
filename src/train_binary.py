@@ -1,17 +1,18 @@
-"""Binary valence prediction with a leaky row-level split.
+"""Binary valence prediction: positive vs negative next-tweet emotion.
 
-Same V2 text-embedding windows as train_binary.py, same model, same loss --
-just swaps user-level split for row-level random split. This is the ceiling
-of "what's reachable if we let the model memorize user style."
+Same V2 windows (text embeddings + sliding window) as train_v2.py, same
+user-level (honest) split, but the 6-class target is collapsed:
+
+    POSITIVE = joy(1), love(2), surprise(5)   -> 1
+    NEGATIVE = sadness(0), anger(3), fear(4)  -> 0
 
 Outputs:
-    emotion_leaky_binary.keras
-    metrics_leaky_binary.json
+    emotion_binary.keras
+    metrics_binary.json
 """
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import numpy as np
 import tensorflow as tf
@@ -21,23 +22,46 @@ from sklearn.metrics import (
     f1_score,
     roc_auc_score,
 )
-from sklearn.model_selection import train_test_split
+from sklearn.utils.class_weight import compute_class_weight
 from tensorflow import keras
 from tensorflow.keras import layers
 
-REPO_ROOT = Path(__file__).resolve().parent
-INPUT_NPZ = REPO_ROOT / "windows_v2.npz"
-MODEL_OUT = REPO_ROOT / "emotion_leaky_binary.keras"
-METRICS_OUT = REPO_ROOT / "metrics_leaky_binary.json"
+from paths import DATA_INTERIM, METRICS_DIR, MODELS_DIR
 
+INPUT_NPZ = DATA_INTERIM / "windows_v2.npz"
+MODEL_OUT = MODELS_DIR / "emotion_binary.keras"
+METRICS_OUT = METRICS_DIR / "metrics_binary.json"
+
+# 6-class -> binary valence mapping
 POSITIVE_CLASSES = {1, 2, 5}  # joy, love, surprise
+NEGATIVE_CLASSES = {0, 3, 4}  # sadness, anger, fear
+
 RANDOM_SEED = 42
-TEST_FRAC = 0.20
-VAL_FRAC = 0.10
+TRAIN_FRAC = 0.70
+VAL_FRAC = 0.15
 
 
 def to_binary(y: np.ndarray) -> np.ndarray:
+    """0 = negative, 1 = positive."""
     return np.isin(y, list(POSITIVE_CLASSES)).astype(np.int64)
+
+
+def user_level_split(user_ids, frac_train, frac_val, seed):
+    rng = np.random.default_rng(seed)
+    unique_users = np.unique(user_ids)
+    rng.shuffle(unique_users)
+    n = len(unique_users)
+    n_train = int(round(n * frac_train))
+    n_val = int(round(n * frac_val))
+    train_u = set(unique_users[:n_train])
+    val_u = set(unique_users[n_train : n_train + n_val])
+    test_u = set(unique_users[n_train + n_val :])
+    train_idx = np.array([i for i, u in enumerate(user_ids) if u in train_u])
+    val_idx = np.array([i for i, u in enumerate(user_ids) if u in val_u])
+    test_idx = np.array([i for i, u in enumerate(user_ids) if u in test_u])
+    print(f"Users  train/val/test: {len(train_u)}/{len(val_u)}/{len(test_u)}")
+    print(f"Rows   train/val/test: {len(train_idx)}/{len(val_idx)}/{len(test_idx)}")
+    return train_idx, val_idx, test_idx
 
 
 def build_model(input_shape):
@@ -64,24 +88,25 @@ def main():
     data = np.load(INPUT_NPZ)
     X = data["X"].astype(np.float32)
     y_multi = data["y"].astype(np.int64)
+    user_ids = data["user_ids"]
     last_emotion_multi = data["last_emotion"]
 
     y = to_binary(y_multi)
     last_emo_binary = to_binary(last_emotion_multi)
-    print(f"Loaded X={X.shape}, y={y.shape} (positive={y.mean()*100:.1f}%)")
+    pos_pct = float(y.mean()) * 100
+    print(f"Loaded X={X.shape}, y={y.shape} (positive={pos_pct:.1f}%)")
 
-    indices = np.arange(len(y))
-    idx_tr, idx_te = train_test_split(
-        indices, test_size=TEST_FRAC, random_state=RANDOM_SEED, stratify=y
+    train_idx, val_idx, test_idx = user_level_split(
+        user_ids, TRAIN_FRAC, VAL_FRAC, RANDOM_SEED
     )
-    idx_tr, idx_va = train_test_split(
-        idx_tr, test_size=VAL_FRAC, random_state=RANDOM_SEED, stratify=y[idx_tr]
-    )
-    X_tr, y_tr = X[idx_tr], y[idx_tr]
-    X_va, y_va = X[idx_va], y[idx_va]
-    X_te, y_te = X[idx_te], y[idx_te]
-    last_emo_te = last_emo_binary[idx_te]
-    print(f"Rows train/val/test: {len(y_tr)}/{len(y_va)}/{len(y_te)}")
+    X_tr, y_tr = X[train_idx], y[train_idx]
+    X_va, y_va = X[val_idx], y[val_idx]
+    X_te, y_te = X[test_idx], y[test_idx]
+    last_emo_te = last_emo_binary[test_idx]
+
+    raw_weights = compute_class_weight("balanced", classes=np.array([0, 1]), y=y_tr)
+    class_weight = {0: float(raw_weights[0]), 1: float(raw_weights[1])}
+    print(f"Train positive%: {y_tr.mean()*100:.1f}  Class weights: {class_weight}")
 
     model = build_model(X.shape[1:])
     model.summary()
@@ -101,6 +126,7 @@ def main():
         validation_data=(X_va, y_va),
         epochs=60,
         batch_size=64,
+        class_weight=class_weight,
         callbacks=callbacks,
         verbose=2,
     )
@@ -126,7 +152,7 @@ def main():
     majority_acc = float(np.mean(y_te == majority))
     persistence_acc = float(np.mean(last_emo_te == y_te))
 
-    print("\n=== Leaky binary test report ===")
+    print("\n=== Binary test report ===")
     print(report)
     print("Confusion matrix (rows=true, cols=pred):")
     print(cm)
@@ -144,11 +170,9 @@ def main():
         json.dumps(
             {
                 "task": "binary_valence",
-                "evaluation_protocol": "leaky_row_level_split",
-                "warning": (
-                    "Row-level split: same user's windows can appear in both "
-                    "train and test. Numbers inflate via per-user style memorization."
-                ),
+                "positive_classes": ["joy", "love", "surprise"],
+                "negative_classes": ["sadness", "anger", "fear"],
+                "evaluation_protocol": "user_level_split",
                 "accuracy": acc,
                 "weighted_f1": weighted_f1,
                 "binary_f1_positive": binary_f1,

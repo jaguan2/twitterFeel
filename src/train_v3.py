@@ -27,7 +27,7 @@ from sklearn.utils.class_weight import compute_class_weight
 from tensorflow import keras
 from tensorflow.keras import layers
 
-REPO_ROOT = Path(__file__).resolve().parent
+from paths import DATA_INTERIM, METRICS_DIR, MODELS_DIR
 
 NUM_EMOTIONS = 6
 EMOTION_NAMES = ["sadness", "joy", "love", "anger", "fear", "surprise"]
@@ -117,13 +117,14 @@ def main():
     parser.add_argument("--batch", type=int, default=64)
     args = parser.parse_args()
 
-    npz_path = REPO_ROOT / args.npz
+    npz_arg = Path(args.npz)
+    npz_path = npz_arg if npz_arg.is_absolute() or npz_arg.parent != Path(".") else DATA_INTERIM / npz_arg.name
     stem = npz_path.stem  # e.g. windows_v3_w10
     arch = "bilstm" if args.bilstm else "lstm"
     task = "binary" if args.binary else "6cls"
     tag = f"{stem}_{task}_{arch}"
-    model_out = REPO_ROOT / f"emotion_{tag}.keras"
-    metrics_out = REPO_ROOT / f"metrics_{tag}.json"
+    model_out = MODELS_DIR / f"emotion_{tag}.keras"
+    metrics_out = METRICS_DIR / f"metrics_{tag}.json"
 
     tf.keras.utils.set_random_seed(RANDOM_SEED)
 

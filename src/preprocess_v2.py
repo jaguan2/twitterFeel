@@ -17,15 +17,14 @@ Output:
 """
 from __future__ import annotations
 
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 
-REPO_ROOT = Path(__file__).resolve().parent
-INPUT_CSV = REPO_ROOT / "dataset_godknowswhat.csv"
-INPUT_EMB = REPO_ROOT / "tweet_embeddings.npy"
-OUTPUT_NPZ = REPO_ROOT / "windows_v2.npz"
+from paths import DATA_INTERIM
+
+INPUT_CSV = DATA_INTERIM / "dataset_godknowswhat.csv"
+INPUT_EMB = DATA_INTERIM / "tweet_embeddings.npy"
+OUTPUT_NPZ = DATA_INTERIM / "windows_v2.npz"
 
 WINDOW = 10  # 9 history + 1 target
 HISTORY = WINDOW - 1

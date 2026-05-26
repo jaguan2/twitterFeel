@@ -8,15 +8,14 @@ emotion_encoded (int) using the README mapping:
 """
 from __future__ import annotations
 
-from pathlib import Path
-
 import pandas as pd
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-REPO_ROOT = Path(__file__).resolve().parent
-INPUT_CSV = REPO_ROOT / "cleaned_Mental-Health-Twitter.xls"
-OUTPUT_CSV = REPO_ROOT / "dataset_godknowswhat.csv"
+from paths import DATA_INTERIM, DATA_RAW
+
+INPUT_CSV = DATA_RAW / "cleaned_Mental-Health-Twitter.xls"
+OUTPUT_CSV = DATA_INTERIM / "dataset_godknowswhat.csv"
 MODEL_NAME = "bhadresh-savani/distilbert-base-uncased-emotion"
 BATCH_SIZE = 64
 MAX_LENGTH = 128

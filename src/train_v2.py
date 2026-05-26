@@ -10,7 +10,6 @@ Writes:
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import numpy as np
 import tensorflow as tf
@@ -19,10 +18,11 @@ from sklearn.utils.class_weight import compute_class_weight
 from tensorflow import keras
 from tensorflow.keras import layers
 
-REPO_ROOT = Path(__file__).resolve().parent
-INPUT_NPZ = REPO_ROOT / "windows_v2.npz"
-MODEL_OUT = REPO_ROOT / "emotion_lstm_v2.keras"
-METRICS_OUT = REPO_ROOT / "metrics_v2.json"
+from paths import DATA_INTERIM, METRICS_DIR, MODELS_DIR
+
+INPUT_NPZ = DATA_INTERIM / "windows_v2.npz"
+MODEL_OUT = MODELS_DIR / "emotion_lstm_v2.keras"
+METRICS_OUT = METRICS_DIR / "metrics_v2.json"
 
 NUM_EMOTIONS = 6
 EMOTION_NAMES = ["sadness", "joy", "love", "anger", "fear", "surprise"]

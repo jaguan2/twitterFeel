@@ -9,14 +9,13 @@ split_group slicing quirk -- fix in a follow-up if/when desired).
 """
 from __future__ import annotations
 
-from pathlib import Path
-
 import pandas as pd
 
-REPO_ROOT = Path(__file__).resolve().parent
-INPUT_CSV = REPO_ROOT / "dataset_godknowswhat.csv"
-MATRIX_OUT = REPO_ROOT / "filtered_input_matrix.csv"
-USERS_OUT = REPO_ROOT / "user_ids.csv"
+from paths import DATA_INTERIM
+
+INPUT_CSV = DATA_INTERIM / "dataset_godknowswhat.csv"
+MATRIX_OUT = DATA_INTERIM / "filtered_input_matrix.csv"
+USERS_OUT = DATA_INTERIM / "user_ids.csv"
 
 WINDOW = 10  # 9 history tweets + 1 target
 EXPECTED_ROW_LEN = 3 * (WINDOW - 1) + 1  # 28
