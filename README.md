@@ -20,21 +20,30 @@ Binary valence collapse used in some experiments:
 - positive = {joy, love, surprise}
 - negative = {sadness, anger, fear}
 
-## Repository layout
+## 📁 Project structure
 
 ```
-data/raw/          source data (Mental-Health-Twitter.xls, cleaned_*.xls)
-data/interim/      generated artifacts (embeddings, windowed npz, ...)  -- gitignored
-src/               all Python scripts + paths.py (shared filesystem layout)
-models/            *.keras (trained model checkpoints)
-metrics/           metrics_*.json (one per trained model)
-docs/              FINDINGS.md (investigation), handoff.md (handoff notes),
-                   CAP4773_fin_1.ipynb (original course notebook)
-twitter_feel_plus/ companion subproject: rolling sustained-sadness signal
-                   detection over the DistilBERT-labeled corpus (research
-                   artifact, NOT a clinical or diagnostic tool — see its
-                   README for caveats)
-requirements.txt   pinned deps (TF 2.16+ for Python 3.12 wheels)
+twitterFeel/
+├── data/
+│   ├── raw/                    # source corpus (Mental-Health-Twitter.xls, cleaned_*)
+│   └── interim/                # generated: labeled CSV, embeddings, windowed npz
+├── src/
+│   ├── paths.py                # shared filesystem layout — all scripts import from here
+│   ├── generate_dataset.py     # DistilBERT 6-class emotion label per tweet
+│   ├── generate_embeddings.py  # MiniLM 384-d sentence embedding per tweet
+│   ├── preprocess.py           # V1 windows (notebook replica)
+│   ├── preprocess_v2.py        # V2: embeddings + stride-1 sliding windows
+│   ├── preprocess_v3.py        # V3: + cyclic time features, configurable window size
+│   ├── train.py                # V1 LSTM, 6-class
+│   ├── train_v2.py             # V2 LSTM, 6-class
+│   ├── train_binary.py         # V2 binary valence (honest user-level split)
+│   ├── train_leaky_binary.py   # V2 binary valence (leaky row-level split)
+│   └── train_v3.py             # V3: 6/4-class or binary, LSTM or BiLSTM+attention
+├── models/                     # trained checkpoints (emotion_*.keras)
+├── metrics/                    # metrics_*.json, one per checkpoint (matching names)
+├── docs/                       # FINDINGS.md, handoff.md, original course notebook
+├── twitter_feel_plus/          # sustained-sadness signal subproject (see its README)
+└── requirements.txt            # pinned deps (TF 2.16+ for Python 3.12)
 ```
 
 ## Quick start
