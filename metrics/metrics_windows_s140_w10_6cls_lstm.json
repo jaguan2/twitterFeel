@@ -1,0 +1,67 @@
+{
+  "tag": "windows_s140_w10_6cls_lstm",
+  "npz": "windows_s140_w10.npz",
+  "task": "6cls",
+  "arch": "lstm",
+  "accuracy": 0.21494992846924177,
+  "weighted_f1": 0.25409392939311964,
+  "macro_f1": 0.15670068729921335,
+  "binary_f1_positive": null,
+  "roc_auc": null,
+  "baselines": {
+    "majority_class": 1,
+    "majority_acc": 0.5014306151645207,
+    "persistence_acc": 0.3907367668097282
+  },
+  "report": "              precision    recall  f1-score   support\n\n     sadness     0.1965    0.3542    0.2527       782\n         joy     0.5802    0.2115    0.3100      2804\n        love     0.0319    0.1793    0.0541       145\n       anger     0.3329    0.1525    0.2091      1548\n        fear     0.0478    0.2500    0.0803       256\n    surprise     0.0203    0.1053    0.0340        57\n\n    accuracy                         0.2149      5592\n   macro avg     0.2016    0.2088    0.1567      5592\nweighted avg     0.4138    0.2149    0.2541      5592\n",
+  "confusion_matrix": [
+    [
+      277,
+      108,
+      92,
+      76,
+      196,
+      33
+    ],
+    [
+      623,
+      593,
+      459,
+      339,
+      641,
+      149
+    ],
+    [
+      32,
+      28,
+      26,
+      16,
+      29,
+      14
+    ],
+    [
+      383,
+      248,
+      197,
+      236,
+      400,
+      84
+    ],
+    [
+      77,
+      35,
+      32,
+      38,
+      64,
+      10
+    ],
+    [
+      18,
+      10,
+      10,
+      4,
+      9,
+      6
+    ]
+  ]
+}

@@ -166,5 +166,27 @@ python src/preprocess_v3.py 10 s140
 python src/train_v3.py windows_s140_w10.npz            # + --four-class, --binary
 ```
 
-**Results:** _pending — labeling + embedding workers running._
-**Verdict:** _pending._
+**Results:** (all honest user-level split; note baselines shift with the
+corpus — s140 windows are 53% joy vs 40% in the old corpus)
+
+| Task | Acc | wF1 | macro F1 | Majority | Persistence | Beats baselines? |
+|---|---:|---:|---:|---:|---:|---|
+| 6-class | 0.215 | 0.254 | 0.157 | 0.501 | 0.391 | ✗ far below majority |
+| 4-class | 0.299 | 0.334 | 0.254 | 0.520 | 0.404 | ✗ far below majority |
+| binary  | **0.572** | **0.563** | 0.557 | 0.538 | 0.548 | ✓ beats both (+3.5 pp / +2.4 pp), ROC-AUC 0.593 |
+
+([metrics_windows_s140_w10_6cls_lstm.json](../metrics/metrics_windows_s140_w10_6cls_lstm.json),
+[metrics_windows_s140_w10_4cls_lstm.json](../metrics/metrics_windows_s140_w10_4cls_lstm.json),
+[metrics_windows_s140_w10_binary_lstm.json](../metrics/metrics_windows_s140_w10_binary_lstm.json))
+
+**Verdict:** mixed, leaning supported. **Binary is the project's first
+honest result to beat both baselines on any corpus** (old corpus binary
+was a statistical tie with majority), with ROC-AUC 0.593 — evidence that
+the 38-user constraint really was binding and user-invariant valence
+signal exists. Multi-class collapsed, but the confusion matrices show
+why: `compute_class_weight("balanced")` under s140's harsher imbalance
+(joy 53%, surprise 1%) forces the model to chase rare-class recall at
+catastrophic cost to accuracy (joy recall 0.21 despite 0.58 precision).
+That's an objective mismatch, not absent signal. → E14 candidate: re-run
+multi-class with class weighting disabled or softened (e.g. sqrt), which
+needs only a small `train_v3.py` flag.

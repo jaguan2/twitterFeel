@@ -1,0 +1,27 @@
+{
+  "tag": "windows_s140_w10_binary_lstm",
+  "npz": "windows_s140_w10.npz",
+  "task": "binary",
+  "arch": "lstm",
+  "accuracy": 0.5724248927038627,
+  "weighted_f1": 0.5632682153779691,
+  "macro_f1": 0.5570752935150459,
+  "binary_f1_positive": 0.6395296246042514,
+  "roc_auc": 0.592857594941594,
+  "baselines": {
+    "majority_class": 1,
+    "majority_acc": 0.5375536480686696,
+    "persistence_acc": 0.5484620886981402
+  },
+  "report": "              precision    recall  f1-score   support\n\n    negative     0.5496    0.4176    0.4746      2586\n    positive     0.5848    0.7056    0.6395      3006\n\n    accuracy                         0.5724      5592\n   macro avg     0.5672    0.5616    0.5571      5592\nweighted avg     0.5685    0.5724    0.5633      5592\n",
+  "confusion_matrix": [
+    [
+      1080,
+      1506
+    ],
+    [
+      885,
+      2121
+    ]
+  ]
+}
