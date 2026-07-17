@@ -5,8 +5,17 @@ runs a Hugging Face 6-class emotion classifier on the cleaned_text column,
 and writes a CSV containing every original column plus emotion (string) and
 emotion_encoded (int) using the README mapping:
     0=sadness, 1=joy, 2=love, 3=anger, 4=fear, 5=surprise
+
+Usage:
+    python generate_dataset.py [INPUT_CSV [OUTPUT_CSV]]
+
+Defaults to the Mental-Health-Twitter corpus; pass paths to label another
+corpus (any CSV with a cleaned_text column, e.g. from prepare_sentiment140.py).
 """
 from __future__ import annotations
+
+import sys
+from pathlib import Path
 
 import pandas as pd
 import torch
@@ -30,9 +39,9 @@ EXPECTED_ID2LABEL = {
 }
 
 
-def main() -> None:
-    df = pd.read_csv(INPUT_CSV)
-    print(f"Loaded {len(df):,} rows from {INPUT_CSV.name}")
+def main(input_csv: Path = INPUT_CSV, output_csv: Path = OUTPUT_CSV) -> None:
+    df = pd.read_csv(input_csv)
+    print(f"Loaded {len(df):,} rows from {input_csv.name}")
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Using device: {device}")
@@ -69,11 +78,11 @@ def main() -> None:
     df["emotion_encoded"] = preds
     df["emotion"] = df["emotion_encoded"].map(EXPECTED_ID2LABEL)
 
-    df.to_csv(OUTPUT_CSV, index=True)
-    print(f"\nWrote {len(df):,} rows to {OUTPUT_CSV.name}")
+    df.to_csv(output_csv, index=True)
+    print(f"\nWrote {len(df):,} rows to {output_csv.name}")
     print("\nEmotion distribution:")
     print(df["emotion"].value_counts())
 
 
 if __name__ == "__main__":
-    main()
+    main(*[Path(a) for a in sys.argv[1:3]])

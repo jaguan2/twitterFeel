@@ -13,10 +13,14 @@ Per-step features per tweet (vs V2's 386):
     391  total
 
 Usage:
-    python preprocess_v3.py [WINDOW_SIZE]
+    python preprocess_v3.py [WINDOW_SIZE] [DATASET_TAG]
 
 WINDOW_SIZE defaults to 10 (9 history + 1 target). Try 16 or 21 for longer
 context. Outputs windows_v3_w{N}.npz.
+
+DATASET_TAG switches corpus by naming convention: with tag "s140" it reads
+dataset_s140.csv + tweet_embeddings_s140.npy and writes windows_s140_w{N}.npz.
+Without a tag it uses the original Mental-Health-Twitter files.
 """
 from __future__ import annotations
 
@@ -41,12 +45,18 @@ def overnight_tweet(hour: int) -> int:
     return 1 if hour in range(5) or hour == 23 else 0
 
 
-def main(window: int) -> None:
+def main(window: int, tag: str | None = None) -> None:
     history = window - 1
-    out_path = DATA_INTERIM / f"windows_v3_w{window}.npz"
+    if tag:
+        input_csv = DATA_INTERIM / f"dataset_{tag}.csv"
+        input_emb = DATA_INTERIM / f"tweet_embeddings_{tag}.npy"
+        out_path = DATA_INTERIM / f"windows_{tag}_w{window}.npz"
+    else:
+        input_csv, input_emb = INPUT_CSV, INPUT_EMB
+        out_path = DATA_INTERIM / f"windows_v3_w{window}.npz"
 
-    df = pd.read_csv(INPUT_CSV)
-    embeddings = np.load(INPUT_EMB)
+    df = pd.read_csv(input_csv)
+    embeddings = np.load(input_emb)
     assert len(df) == len(embeddings)
     print(f"Loaded {len(df):,} rows + embeddings {embeddings.shape}")
 
@@ -135,4 +145,5 @@ def main(window: int) -> None:
 
 if __name__ == "__main__":
     window = int(sys.argv[1]) if len(sys.argv) > 1 else 10
-    main(window)
+    tag = sys.argv[2] if len(sys.argv) > 2 else None
+    main(window, tag)

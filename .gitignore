@@ -3,10 +3,20 @@
 # so they MUST stay out of git or pushes will be rejected.
 # Comments must be on their own lines (gitignore does not support inline comments).
 
-# Heavy regenerable artifacts (live under data/interim/)
+# Heavy regenerable artifacts: NumPy arrays anywhere in the tree
+# (stray root-level copies of windows_*.npz blocked a push at 100+ MB)
+*.npz
+*.npy
 data/interim/tweet_embeddings.npy
 data/interim/windows_v2.npz
 data/interim/windows_v3_w*.npz
+
+# Sentiment140 intermediates (regenerate: prepare_sentiment140.py, then
+# generate_dataset.py / generate_embeddings.py / preprocess_v3.py with s140 args)
+data/interim/dataset_s140_unlabeled.csv
+data/interim/dataset_s140.csv
+data/interim/tweet_embeddings_s140.npy
+data/interim/windows_s140_w*.npz
 
 # Small regenerables
 data/interim/filtered_input_matrix.csv
