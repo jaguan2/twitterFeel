@@ -1,5 +1,9 @@
 # TwitterFeel — Handoff
 
+> Historical V1–V3 handoff. Current implementation and commands are in
+> [V4.md](V4.md). Statements below about best results, expected gains and
+> incomplete features reflect earlier experiments, not current conclusions.
+
 ## TL;DR
 
 We built an end-to-end reproducible pipeline for next-tweet emotion prediction,

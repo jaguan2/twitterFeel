@@ -1,0 +1,44 @@
+{
+  "tag": "windows_v3_w10_4cls_lstm_cwnone",
+  "npz": "windows_v3_w10.npz",
+  "task": "4cls",
+  "arch": "lstm",
+  "class_weight_mode": "none",
+  "accuracy": 0.42373485388453314,
+  "weighted_f1": 0.26789290757455636,
+  "macro_f1": 0.15965822538340835,
+  "binary_f1_positive": null,
+  "roc_auc": null,
+  "baselines": {
+    "majority_class": 1,
+    "majority_acc": 0.41625089094796863,
+    "persistence_acc": 0.4112615823235923
+  },
+  "report": "              precision    recall  f1-score   support\n\n     sadness     0.0000    0.0000    0.0000       213\n         joy     0.4194    0.9897    0.5892      1168\n       anger     0.6600    0.0257    0.0494      1285\n        fear     0.0000    0.0000    0.0000       140\n\n    accuracy                         0.4237      2806\n   macro avg     0.2699    0.2539    0.1597      2806\nweighted avg     0.4768    0.4237    0.2679      2806\n",
+  "confusion_matrix": [
+    [
+      0,
+      211,
+      2,
+      0
+    ],
+    [
+      0,
+      1156,
+      12,
+      0
+    ],
+    [
+      0,
+      1252,
+      33,
+      0
+    ],
+    [
+      0,
+      137,
+      3,
+      0
+    ]
+  ]
+}

@@ -33,3 +33,9 @@ venv/
 
 # Pipeline / install logs
 *.log
+
+# V4 runs include per-user predictions and regenerable fitted models.
+runs/
+data/interim/windows_v4_*.json
+data/interim/dataset_reddit*.csv
+data/interim/tweet_embeddings*.json

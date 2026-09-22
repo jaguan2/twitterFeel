@@ -5,6 +5,9 @@ Running per-iteration research log. Each entry records the hypothesis
 compiled writeup. Quantitative details live in `metrics/metrics_*.json`
 (one per checkpoint, matching names); this file carries the narrative.
 
+V4 development starts at E15; its cleaned data and grouped cross-validation
+protocol differ from E1–E14. See [V4.md](V4.md) for the current workflow.
+
 Entries E1–E12 were backfilled on 2026-07-17 from
 [handoff.md](handoff.md) and [FINDINGS.md](FINDINGS.md); E13 onward are
 written as the experiments run.
@@ -190,3 +193,116 @@ catastrophic cost to accuracy (joy recall 0.21 despite 0.58 precision).
 That's an objective mismatch, not absent signal. → E14 candidate: re-run
 multi-class with class weighting disabled or softened (e.g. sqrt), which
 needs only a small `train_v3.py` flag.
+
+## E14 — Class-weight softening, multi-class, original corpus (2026-07-28)
+**Hypothesis:** E13 argued that `compute_class_weight("balanced")` forces
+the model to chase rare-class recall at catastrophic cost to accuracy.
+Softening the weights (`sqrt`) or removing them (`none`) should recover
+accuracy and weighted F1 on multi-class.
+**Setup:** new `--class-weight {balanced,sqrt,none}` flag on
+[train_v3.py](../src/train_v3.py); non-default modes get a `_cw{mode}`
+filename suffix so E1–E13 artifacts are never overwritten. Run on the
+**original** Mental-Health corpus (`windows_v3_w10.npz`), not s140 — the
+s140 intermediates are gitignored and the raw Sentiment140 CSV is not on
+disk, so the s140 version of this experiment is still pending.
+
+```bash
+python src/train_v3.py windows_v3_w10.npz --class-weight sqrt   # + --four-class
+python src/train_v3.py windows_v3_w10.npz --class-weight none   # + --four-class
+```
+
+**Results:** (honest user-level split; majority 0.405 for 6-class,
+0.416 for 4-class)
+
+| Task | Weighting | Acc | wF1 | macro F1 |
+|---|---|---:|---:|---:|
+| 6-class | balanced (E5) | 0.3887 | 0.3791 | 0.1725 |
+| 6-class | **sqrt** | **0.4612** | **0.4097** | 0.1738 |
+| 6-class | none | 0.4338 | 0.3129 | 0.1259 |
+| 4-class | balanced (E11) | **0.4572** | **0.4099** | **0.2474** |
+| 4-class | sqrt | 0.4284 | 0.3036 | 0.1790 |
+| 4-class | none | 0.4237 | 0.2679 | 0.1597 |
+
+**Verdict:** mixed — supported for 6-class, refuted for 4-class.
+
+*6-class:* `sqrt` is the first honest 6-class setup to beat majority
+(0.4612 vs 0.4050, **+5.6 pp**), overturning the long-standing "6-class
+trails majority" result from E5. But the per-class report shows the gain
+is **not** rare-class learning: it comes entirely from the model
+committing harder to the two dominant classes (anger recall 0.63→0.76,
+joy 0.24→0.30, together 85% of test rows), while sadness (f1 0.048→0.008)
+and fear (0.093→0.026) actively degrade. Macro F1 looks flat only because
+`love` landed 2 lucky predictions at precision 1.00 on 61 support — that
+is noise, not signal. Caveat on the margin: the majority baseline is the
+*train*-derived class (joy, 0.4050 on test); the best constant predictor
+in hindsight is anger at 0.4456, over which the model gains only +1.6 pp.
+
+*4-class:* softening clearly hurts (wF1 0.410→0.304). With love/surprise
+already dropped the residual imbalance is mild, and `balanced` was doing
+useful work rather than distorting the objective. E11 stands as the best
+4-class configuration.
+
+**Implication:** the "balanced weighting is the problem" story from E13 is
+only true when the imbalance is extreme (a 1%-frequency class). It is a
+per-task knob, not a global fix — and on 6-class it buys headline metrics
+by abandoning the rare classes rather than by learning them. The s140
+re-run (the original E14 proposal, where imbalance is harsher: joy 53%,
+surprise 1%) is the experiment that would actually test E13's claim, and
+still needs the Sentiment140 raw file.
+
+## E15 — V4 evaluation and history-feature comparison (2026-09-22)
+
+**Question:** do explicit historical emotion features help a small LSTM,
+and does it beat simple history-based predictors under grouped validation?
+This entry was recorded after implementation and verification, not preregistered.
+
+**Setup:** cleaned original MHT corpus; 11,801 windows / 53 users. Removed
+204 identical user/time/text records, skipped 1,068 timestamp-tied windows.
+45 development users / 10,336 windows enter five user-disjoint folds; eight
+reserved test users are **not scored**. Source hashes, configurations, aggregate
+scores and intervals are in
+[metrics_v4_mht_binary_development.json](../metrics/metrics_v4_mht_binary_development.json).
+Detailed per-user predictions/splits remain local in ignored `runs/`.
+
+Existing labels use the explicit **one-hot history fallback**, not newly
+generated soft probabilities. Existing embedding order is unverified by a
+manifest and was explicitly accepted. Both LSTM variants use 64 units,
+training-only normalization, no class weights, 10 fixed epochs and seed 42.
+This is an initial comparison, not a tuned V4 model or a V3 architecture replica.
+
+```powershell
+python src/preprocess_v4.py data/interim/dataset_godknowswhat.csv data/interim/tweet_embeddings.npy data/interim/windows_v4_mht_w10.npz --allow-unverified-embeddings
+python src/train_v4.py data/interim/windows_v4_mht_w10.npz --out runs/v4_mht_binary_emotion --task binary --models majority persistence frequency transition logistic lstm --features text-time-emotion --epochs 10
+python src/train_v4.py data/interim/windows_v4_mht_w10.npz --out runs/v4_mht_binary_text --task binary --models lstm --features text-time --epochs 10
+```
+
+**Development results:**
+
+| Model | Accuracy | Macro F1 | Mean user accuracy |
+|---|---:|---:|---:|
+| Training-majority baseline | 0.4709 | 0.4264 | 0.4637 |
+| Persistence | 0.5600 | 0.5591 | 0.5489 |
+| Historical frequency | **0.5833** | **0.5816** | **0.5846** |
+| Transition | 0.5600 | 0.5591 | 0.5489 |
+| Logistic, text/time/emotion | 0.5190 | 0.5188 | 0.5154 |
+| LSTM, text/time | 0.5146 | 0.5142 | 0.4991 |
+| LSTM, text/time/emotion | 0.5038 | 0.5036 | 0.4978 |
+
+The majority class is learned separately in each fold; it need not be the same
+class across folds. Frequency beats persistence by 2.33 percentage points;
+the paired user-cluster bootstrap interval is +1.09 to +3.77 points. This is
+development evidence, conditional on the models and sampled users, not a
+new held-out test result.
+
+**Verdict:** explicit one-hot historical emotions did not improve this LSTM
+configuration, and both learned models trail the frequency baseline. The
+useful outcome is a stronger baseline and an auditable evaluation workflow.
+Next experiments should use development-only tuning and actual probability
+features before considering larger architectures. Do not compare these
+numbers directly with V3 test metrics, or treat this as proof that history
+features cannot help under other training settings.
+
+**Verification:** 16 regression/integration tests pass; synthetic LSTM train,
+save and reload reproduce probabilities. Real MHT preprocessing, both five-fold
+LSTM runs and all baseline runs completed. Test scoring was exercised only on
+synthetic data. No real Reddit dump or regenerated Sentiment140 corpus was run.

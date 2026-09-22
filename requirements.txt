@@ -7,3 +7,5 @@ imbalanced-learn>=0.12
 tensorflow>=2.16,<2.18
 transformers>=4.40
 torch>=2.2
+# Only needed by prepare_reddit.py, to stream .zst Reddit dumps.
+zstandard>=0.22

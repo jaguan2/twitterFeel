@@ -1,5 +1,10 @@
 # TwitterFeel — Findings
 
+> Historical reproduction report, primarily V1–V2. See [EXPERIMENTS.md](EXPERIMENTS.md)
+> for subsequent results and [V4.md](V4.md) for current development. Claims below
+> about the binding constraint and expected model gains are hypotheses, not
+> conclusions established by controlled experiments.
+
 End-to-end reproduction notes for the next-tweet emotion-prediction pipeline,
 including an investigation of the README's claimed `F1 = 0.82`.
 

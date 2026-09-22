@@ -15,6 +15,7 @@ another corpus (any CSV with a cleaned_text column).
 from __future__ import annotations
 
 import sys
+import json
 from pathlib import Path
 
 import numpy as np
@@ -24,6 +25,7 @@ import torch.nn.functional as F
 from transformers import AutoModel, AutoTokenizer
 
 from paths import DATA_INTERIM
+from emotion_schema import text_digest, file_digest
 
 INPUT_CSV = DATA_INTERIM / "dataset_godknowswhat.csv"
 OUTPUT_NPY = DATA_INTERIM / "tweet_embeddings.npy"
@@ -70,7 +72,13 @@ def main(input_csv: Path = INPUT_CSV, output_npy: Path = OUTPUT_NPY) -> None:
             if (start // BATCH_SIZE) % 20 == 0:
                 print(f"  {start + len(batch):>6,}/{len(texts):,}")
 
+    output_npy.parent.mkdir(parents=True, exist_ok=True)
     np.save(output_npy, out)
+    output_npy.with_suffix(".json").write_text(json.dumps({
+        "model": MODEL_NAME, "max_length": MAX_LENGTH,
+        "rows": len(texts), "text_sha256": text_digest(texts),
+        "embedding_sha256": file_digest(output_npy),
+    }, indent=2), encoding="utf-8")
     print(f"\nWrote {out.shape} -> {output_npy.name}")
 
 

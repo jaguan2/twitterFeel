@@ -7,6 +7,14 @@ Usage:
     python train_v3.py windows_v3_w10.npz --binary             # binary, LSTM
     python train_v3.py windows_v3_w10.npz --binary --bilstm    # binary, BiLSTM+attention
     python train_v3.py windows_v3_w16.npz --bilstm             # 6-class, BiLSTM+attention, larger window
+    python train_v3.py windows_v3_w10.npz --class-weight sqrt  # softened class weighting
+    python train_v3.py windows_v3_w10.npz --class-weight none  # unweighted loss
+
+--class-weight controls the imbalance correction. 'balanced' (default,
+used by E1-E13) can force the model to chase 1%-frequency classes at a
+large cost to overall accuracy; 'sqrt' and 'none' soften or remove that.
+Non-default modes get a `_cw{mode}` filename suffix so historical
+checkpoints and metrics are never overwritten.
 
 The --four-class flag drops the two rarest emotions (love=2, surprise=5,
 together <300 windows) and remaps the rest to a dense {0,1,2,3} label space:
@@ -141,6 +149,18 @@ def main():
     )
     parser.add_argument("--epochs", type=int, default=60)
     parser.add_argument("--batch", type=int, default=64)
+    parser.add_argument(
+        "--class-weight",
+        dest="class_weight_mode",
+        choices=["balanced", "sqrt", "none"],
+        default="balanced",
+        help=(
+            "Class weighting: 'balanced' (sklearn, the E1-E13 default), "
+            "'sqrt' (softened: sqrt of balanced weights), or 'none'. "
+            "Under heavy imbalance 'balanced' chases rare-class recall at "
+            "large cost to overall accuracy -- see EXPERIMENTS.md E13/E14."
+        ),
+    )
     args = parser.parse_args()
 
     npz_arg = Path(args.npz)
@@ -154,6 +174,10 @@ def main():
     else:
         task = "6cls"
     tag = f"{stem}_{task}_{arch}"
+    if args.class_weight_mode != "balanced":
+        # Keep the historical filenames for the default so E1-E13 artifacts
+        # are not silently overwritten by a differently-weighted run.
+        tag += f"_cw{args.class_weight_mode}"
     model_out = MODELS_DIR / f"emotion_{tag}.keras"
     metrics_out = METRICS_DIR / f"metrics_{tag}.json"
 
@@ -203,12 +227,19 @@ def main():
         classes = np.arange(len(FOUR_CLASS_KEEP))
     else:
         classes = np.arange(NUM_EMOTIONS)
-    present = np.array([c for c in classes if (y_tr == c).any()])
-    raw = compute_class_weight("balanced", classes=present, y=y_tr)
-    class_weight = {int(c): float(w) for c, w in zip(present, raw)}
-    for c in classes:
-        class_weight.setdefault(int(c), 1.0)
-    print("Class weights:", class_weight)
+    if args.class_weight_mode == "none":
+        class_weight = None
+        print("Class weights: none (unweighted loss)")
+    else:
+        present = np.array([c for c in classes if (y_tr == c).any()])
+        raw = compute_class_weight("balanced", classes=present, y=y_tr)
+        if args.class_weight_mode == "sqrt":
+            # Softened weighting: same ordering as balanced, compressed range.
+            raw = np.sqrt(raw)
+        class_weight = {int(c): float(w) for c, w in zip(present, raw)}
+        for c in classes:
+            class_weight.setdefault(int(c), 1.0)
+        print(f"Class weights ({args.class_weight_mode}):", class_weight)
 
     builder = build_bilstm_attention if args.bilstm else build_lstm
     model = builder(X.shape[1:], len(classes), args.binary)
@@ -283,6 +314,7 @@ def main():
                 "npz": str(npz_path.name),
                 "task": task,
                 "arch": arch,
+                "class_weight_mode": args.class_weight_mode,
                 "accuracy": acc,
                 "weighted_f1": weighted_f1,
                 "macro_f1": macro_f1,

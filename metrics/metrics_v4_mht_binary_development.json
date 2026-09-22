@@ -1,0 +1,462 @@
+{
+  "experiment": "V4 initial binary development comparison",
+  "date": "2026-09-22",
+  "evaluation": "Five user-disjoint development folds; real held-out test users not scored",
+  "runs": {
+    "text_time_emotion": {
+      "npz": "data\\interim\\windows_v4_mht_w10.npz",
+      "out": "runs\\v4_mht_binary_emotion",
+      "task": "binary",
+      "models": [
+        "majority",
+        "persistence",
+        "frequency",
+        "transition",
+        "logistic",
+        "lstm"
+      ],
+      "features": "text-time-emotion",
+      "class_weight": "none",
+      "folds": 5,
+      "seed": 42,
+      "split_seed": 42,
+      "epochs": 10,
+      "batch": 64,
+      "c": 1.0,
+      "evaluate_test": false,
+      "npz_sha256": "b423363ab40180222e3c028bd5d651bf477344b617389b2610e347f18c768cd8",
+      "labels": [
+        "negative",
+        "positive"
+      ],
+      "python": "3.12.10",
+      "numpy": "1.26.4",
+      "sklearn": "1.8.0",
+      "source_sha256": {
+        "train_v4.py": "b5625015cfaf7c370eaf738ca0803cfd84be8de6e34fee523abf839e40865acd",
+        "evaluation.py": "2421c4eba55a7469323e18bad039d3dfd8c7a1a8d1437c67316e311e6111eb94",
+        "emotion_schema.py": "a81b8d0275a9cfda074e83cff6f03b069242a9e6e97f068a27770d8bcbe352f8"
+      },
+      "tensorflow": "2.17.1",
+      "data_audit": {
+        "input_rows": 20000,
+        "missing_text": 19,
+        "invalid_time": 0,
+        "missing_user": 0,
+        "duplicate_user_time": 877,
+        "duplicate_user_text": 1196,
+        "emotion_history": "one_hot_fallback",
+        "exact_duplicates_removed": 204,
+        "windows": 11801,
+        "timestamp_tie_windows_skipped": 1068,
+        "retained_users": 53,
+        "history": 9,
+        "min_posts": 20,
+        "max_posts": 1000,
+        "task": "next retained post",
+        "time_basis": "UTC",
+        "csv_sha256": "abe15158a4c0f40af38af821d30336dc60f65837ccc601f96eefbc1a41a05051",
+        "embeddings_sha256": "3336ca37de743551d3e634ad0472566e7afa1e0b2ebf161f0da711641ada4501",
+        "embedding_alignment_verified": false,
+        "npz_sha256": "b423363ab40180222e3c028bd5d651bf477344b617389b2610e347f18c768cd8"
+      }
+    },
+    "text_time_only": {
+      "npz": "data\\interim\\windows_v4_mht_w10.npz",
+      "out": "runs\\v4_mht_binary_text",
+      "task": "binary",
+      "models": [
+        "lstm"
+      ],
+      "features": "text-time",
+      "class_weight": "none",
+      "folds": 5,
+      "seed": 42,
+      "split_seed": 42,
+      "epochs": 10,
+      "batch": 64,
+      "c": 1.0,
+      "evaluate_test": false,
+      "npz_sha256": "b423363ab40180222e3c028bd5d651bf477344b617389b2610e347f18c768cd8",
+      "labels": [
+        "negative",
+        "positive"
+      ],
+      "python": "3.12.10",
+      "numpy": "1.26.4",
+      "sklearn": "1.8.0",
+      "source_sha256": {
+        "train_v4.py": "b5625015cfaf7c370eaf738ca0803cfd84be8de6e34fee523abf839e40865acd",
+        "evaluation.py": "2421c4eba55a7469323e18bad039d3dfd8c7a1a8d1437c67316e311e6111eb94",
+        "emotion_schema.py": "a81b8d0275a9cfda074e83cff6f03b069242a9e6e97f068a27770d8bcbe352f8"
+      },
+      "tensorflow": "2.17.1",
+      "data_audit": {
+        "input_rows": 20000,
+        "missing_text": 19,
+        "invalid_time": 0,
+        "missing_user": 0,
+        "duplicate_user_time": 877,
+        "duplicate_user_text": 1196,
+        "emotion_history": "one_hot_fallback",
+        "exact_duplicates_removed": 204,
+        "windows": 11801,
+        "timestamp_tie_windows_skipped": 1068,
+        "retained_users": 53,
+        "history": 9,
+        "min_posts": 20,
+        "max_posts": 1000,
+        "task": "next retained post",
+        "time_basis": "UTC",
+        "csv_sha256": "abe15158a4c0f40af38af821d30336dc60f65837ccc601f96eefbc1a41a05051",
+        "embeddings_sha256": "3336ca37de743551d3e634ad0472566e7afa1e0b2ebf161f0da711641ada4501",
+        "embedding_alignment_verified": false,
+        "npz_sha256": "b423363ab40180222e3c028bd5d651bf477344b617389b2610e347f18c768cd8"
+      }
+    }
+  },
+  "results": {
+    "majority": {
+      "rows": 10336,
+      "users": 45,
+      "accuracy": 0.47087848297213625,
+      "macro_f1": 0.4264406262497049,
+      "weighted_f1": 0.4339473340589165,
+      "log_loss": 0.695833945896645,
+      "mean_user_accuracy": 0.46369390024534823,
+      "roc_auc": 0.44912559206804714,
+      "accuracy_ci": {
+        "estimate": 0.47087848297213625,
+        "lower": 0.4206750818130919,
+        "upper": 0.5247097544980932,
+        "confidence": 0.95,
+        "method": "user-cluster bootstrap",
+        "draws": 2000,
+        "users": 45
+      },
+      "paired_accuracy_delta": {
+        "persistence": {
+          "estimate": -0.08910603715170279,
+          "lower": -0.15457279018219375,
+          "upper": -0.030682008468689,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        },
+        "frequency": {
+          "estimate": -0.11242260061919504,
+          "lower": -0.1820349806999672,
+          "upper": -0.05593639920249114,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        },
+        "transition": {
+          "estimate": -0.08910603715170279,
+          "lower": -0.15457279018219375,
+          "upper": -0.030682008468689,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        }
+      }
+    },
+    "persistence": {
+      "rows": 10336,
+      "users": 45,
+      "accuracy": 0.559984520123839,
+      "macro_f1": 0.5590728082794736,
+      "weighted_f1": 0.5600155571227962,
+      "log_loss": 15.859765442502402,
+      "mean_user_accuracy": 0.5488967634604462,
+      "roc_auc": 0.5590824856679427,
+      "accuracy_ci": {
+        "estimate": 0.559984520123839,
+        "lower": 0.5373219585443224,
+        "upper": 0.5871467058548709,
+        "confidence": 0.95,
+        "method": "user-cluster bootstrap",
+        "draws": 2000,
+        "users": 45
+      },
+      "paired_accuracy_delta": {
+        "majority": {
+          "estimate": 0.08910603715170279,
+          "lower": 0.03068200846868898,
+          "upper": 0.15457279018219355,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        },
+        "frequency": {
+          "estimate": -0.02331656346749226,
+          "lower": -0.037683655089355894,
+          "upper": -0.010870143820548076,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        },
+        "transition": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "upper": 0.0,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        }
+      }
+    },
+    "frequency": {
+      "rows": 10336,
+      "users": 45,
+      "accuracy": 0.5833010835913313,
+      "macro_f1": 0.5815794725547025,
+      "weighted_f1": 0.5828414679752177,
+      "log_loss": 0.9835425401637515,
+      "mean_user_accuracy": 0.5845997710757722,
+      "roc_auc": 0.610754235356254,
+      "accuracy_ci": {
+        "estimate": 0.5833010835913313,
+        "lower": 0.5544842889190813,
+        "upper": 0.6176197447106022,
+        "confidence": 0.95,
+        "method": "user-cluster bootstrap",
+        "draws": 2000,
+        "users": 45
+      },
+      "paired_accuracy_delta": {
+        "majority": {
+          "estimate": 0.11242260061919504,
+          "lower": 0.05593639920249114,
+          "upper": 0.18203498069996718,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        },
+        "persistence": {
+          "estimate": 0.02331656346749226,
+          "lower": 0.01087014382054807,
+          "upper": 0.03768365508935587,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        },
+        "transition": {
+          "estimate": 0.02331656346749226,
+          "lower": 0.01087014382054807,
+          "upper": 0.03768365508935587,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        }
+      }
+    },
+    "transition": {
+      "rows": 10336,
+      "users": 45,
+      "accuracy": 0.559984520123839,
+      "macro_f1": 0.5590728082794736,
+      "weighted_f1": 0.5600155571227962,
+      "log_loss": 0.6881979453024394,
+      "mean_user_accuracy": 0.5488967634604462,
+      "roc_auc": 0.5345271101262985,
+      "accuracy_ci": {
+        "estimate": 0.559984520123839,
+        "lower": 0.5373219585443224,
+        "upper": 0.5871467058548709,
+        "confidence": 0.95,
+        "method": "user-cluster bootstrap",
+        "draws": 2000,
+        "users": 45
+      },
+      "paired_accuracy_delta": {
+        "majority": {
+          "estimate": 0.08910603715170279,
+          "lower": 0.03068200846868898,
+          "upper": 0.15457279018219355,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        },
+        "persistence": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "upper": 0.0,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        },
+        "frequency": {
+          "estimate": -0.02331656346749226,
+          "lower": -0.037683655089355894,
+          "upper": -0.010870143820548076,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        }
+      }
+    },
+    "logistic": {
+      "rows": 10336,
+      "users": 45,
+      "accuracy": 0.5189628482972136,
+      "macro_f1": 0.518823332015005,
+      "weighted_f1": 0.5192085872033766,
+      "log_loss": 0.8193612781360501,
+      "mean_user_accuracy": 0.5153921567939674,
+      "roc_auc": 0.5291180683829799,
+      "accuracy_ci": {
+        "estimate": 0.5189628482972136,
+        "lower": 0.4848519428437015,
+        "upper": 0.5484425863194395,
+        "confidence": 0.95,
+        "method": "user-cluster bootstrap",
+        "draws": 2000,
+        "users": 45
+      },
+      "paired_accuracy_delta": {
+        "majority": {
+          "estimate": 0.0480843653250774,
+          "lower": -0.02664995065521481,
+          "upper": 0.11248063227173062,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        },
+        "persistence": {
+          "estimate": -0.04102167182662539,
+          "lower": -0.08597638083385303,
+          "upper": -0.004878674765671543,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        },
+        "frequency": {
+          "estimate": -0.06433823529411764,
+          "lower": -0.11344502488448326,
+          "upper": -0.02728562210976487,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        },
+        "transition": {
+          "estimate": -0.04102167182662539,
+          "lower": -0.08597638083385303,
+          "upper": -0.004878674765671543,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        }
+      }
+    },
+    "lstm_text_time_emotion": {
+      "rows": 10336,
+      "users": 45,
+      "accuracy": 0.5037732198142415,
+      "macro_f1": 0.5035623963836151,
+      "weighted_f1": 0.5040434301267344,
+      "log_loss": 0.9757911906481698,
+      "mean_user_accuracy": 0.4978121660914434,
+      "roc_auc": 0.5072088723196871,
+      "accuracy_ci": {
+        "estimate": 0.5037732198142415,
+        "lower": 0.48655602855678726,
+        "upper": 0.5222341205370418,
+        "confidence": 0.95,
+        "method": "user-cluster bootstrap",
+        "draws": 2000,
+        "users": 45
+      },
+      "paired_accuracy_delta": {
+        "majority": {
+          "estimate": 0.03289473684210526,
+          "lower": -0.02727768060314231,
+          "upper": 0.08613514262951334,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        },
+        "persistence": {
+          "estimate": -0.05621130030959752,
+          "lower": -0.08856924501567538,
+          "upper": -0.0278903411119622,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        },
+        "frequency": {
+          "estimate": -0.07952786377708979,
+          "lower": -0.11989773694275754,
+          "upper": -0.0482593370407003,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        },
+        "transition": {
+          "estimate": -0.05621130030959752,
+          "lower": -0.08856924501567538,
+          "upper": -0.0278903411119622,
+          "confidence": 0.95,
+          "method": "paired user-cluster bootstrap",
+          "draws": 2000,
+          "users": 45
+        }
+      }
+    },
+    "lstm_text_time_only": {
+      "rows": 10336,
+      "users": 45,
+      "accuracy": 0.514609133126935,
+      "macro_f1": 0.5142293619986065,
+      "weighted_f1": 0.5148680082559339,
+      "log_loss": 0.9525972667812347,
+      "mean_user_accuracy": 0.4990569495434994,
+      "roc_auc": 0.526267923866311,
+      "accuracy_ci": {
+        "estimate": 0.514609133126935,
+        "lower": 0.49774055875942586,
+        "upper": 0.5331098293645734,
+        "confidence": 0.95,
+        "method": "user-cluster bootstrap",
+        "draws": 2000,
+        "users": 45
+      }
+    }
+  },
+  "emotion_minus_text_accuracy": {
+    "estimate": -0.010835913312693499,
+    "lower": -0.031325867734259924,
+    "upper": 0.008484174350224234,
+    "confidence": 0.95,
+    "method": "paired user-cluster bootstrap",
+    "draws": 2000,
+    "users": 45
+  },
+  "limitations": [
+    "One training seed and epoch setting; no hyperparameter search",
+    "Historical emotions use one-hot fallback, not soft probabilities",
+    "Legacy embedding order lacks manifest verification",
+    "V4 data cleaning/splits differ from V3",
+    "Bootstrap intervals condition on fitted models",
+    "Original corpus has already informed past research"
+  ]
+}

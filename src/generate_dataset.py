@@ -22,6 +22,7 @@ import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 from paths import DATA_INTERIM, DATA_RAW
+from emotion_schema import PROBABILITY_COLUMNS
 
 INPUT_CSV = DATA_RAW / "cleaned_Mental-Health-Twitter.xls"
 OUTPUT_CSV = DATA_INTERIM / "dataset_godknowswhat.csv"
@@ -59,6 +60,7 @@ def main(input_csv: Path = INPUT_CSV, output_csv: Path = OUTPUT_CSV) -> None:
 
     texts = df["cleaned_text"].fillna("").astype(str).tolist()
     preds: list[int] = []
+    probabilities: list[list[float]] = []
 
     with torch.no_grad():
         for start in range(0, len(texts), BATCH_SIZE):
@@ -72,13 +74,16 @@ def main(input_csv: Path = INPUT_CSV, output_csv: Path = OUTPUT_CSV) -> None:
             ).to(device)
             logits = model(**enc).logits
             preds.extend(logits.argmax(dim=-1).cpu().tolist())
+            probabilities.extend(logits.softmax(dim=-1).cpu().tolist())
             if (start // BATCH_SIZE) % 20 == 0:
                 print(f"  {start + len(batch):>6,}/{len(texts):,}")
 
     df["emotion_encoded"] = preds
     df["emotion"] = df["emotion_encoded"].map(EXPECTED_ID2LABEL)
+    df[PROBABILITY_COLUMNS] = probabilities
 
-    df.to_csv(output_csv, index=True)
+    output_csv.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(output_csv, index=False)
     print(f"\nWrote {len(df):,} rows to {output_csv.name}")
     print("\nEmotion distribution:")
     print(df["emotion"].value_counts())

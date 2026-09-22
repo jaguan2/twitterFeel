@@ -66,9 +66,10 @@ def main(raw_csv: Path, out_csv: Path) -> None:
     df = df.drop_duplicates("tweet_id")
     df["cleaned_text"] = df["text"].astype(str).map(clean_text)
     df = df[df["cleaned_text"].str.len() >= 3]
-    df = df.drop_duplicates(["user", "cleaned_text"])
-    print(f"After cleaning + dedup: {len(df):,} rows")
-
+    stats = df.groupby("user")["cleaned_text"].agg(["size", "nunique"])
+    nonspam = stats.index[stats["nunique"] / stats["size"] >= MIN_UNIQUE_RATIO]
+    df = df[df["user"].isin(nonspam)].drop_duplicates(["user", "cleaned_text"])
+    print(f"After spam filtering + dedup: {len(df):,} rows")
     stats = df.groupby("user")["cleaned_text"].agg(["size", "nunique"])
     eligible = stats[
         (stats["size"] >= MIN_USER_TWEETS)
