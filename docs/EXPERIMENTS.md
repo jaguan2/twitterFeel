@@ -1,16 +1,17 @@
-# TwitterFeel — Experiment Log
+# Historical forecasting experiment log
 
-Running per-iteration research log. Each entry records the hypothesis
-*before* the results, so the reasoning chain survives for the eventual
-compiled writeup. Quantitative details live in `metrics/metrics_*.json`
-(one per checkpoint, matching names); this file carries the narrative.
+This is the record of the earlier next-post prediction experiments. Current
+work labels existing posts; start with the [README](../README.md),
+[annotation guide](EMOTION_LABELING.md), and [model checks](LABELING_CHECK.md).
+Forecasting scores below do not measure existing-post labeling quality.
+
+Quantitative details live in `metrics/metrics_*.json`; this file retains the
+experiment narrative. Entries E1–E12 were reconstructed from early notes on
+2026-07-17. Later entries state their setup and findings; E15 explicitly
+notes that it was recorded after implementation rather than preregistered.
 
 V4 development starts at E15; its cleaned data and grouped cross-validation
-protocol differ from E1–E14. See [V4.md](V4.md) for the current workflow.
-
-Entries E1–E12 were backfilled on 2026-07-17 from
-[handoff.md](handoff.md) and [FINDINGS.md](FINDINGS.md); E13 onward are
-written as the experiments run.
+protocol differ from E1–E14. See [V4.md](V4.md) to reproduce that workflow.
 
 Shared context: all "honest" rows use a user-level split (no user in more
 than one of train/val/test), seed 42, majority-class and persistence
@@ -40,9 +41,8 @@ DistilBERT-labeled; `python src/preprocess.py && python src/train.py`.
 **Results:** acc 0.232 / wF1 0.279 vs majority 0.405, persistence 0.401
 ([metrics.json](../metrics/metrics.json)).
 **Verdict:** refuted — loses to both baselines by a wide margin. The 0.82
-claim does not survive honest evaluation; see the investigation in
-[FINDINGS.md](FINDINGS.md) (most likely a training-set metric, an
-upstream-DistilBERT score, or unreproducible preprocessing).
+claim was not reproduced by these experiments. The provenance of the
+original number remains unresolved; it must not be used as a verified result.
 
 ## E2 — V2 LSTM, 6-class (text embeddings + sliding window)
 **Hypothesis:** throwing away tweet text was the notebook's biggest
@@ -148,7 +148,7 @@ both metrics (same pattern as 6-class).
 
 ## E13 — Sentiment140 corpus swap (2026-07-17)
 **Hypothesis:** the #1 binding constraint is 38 training users
-(FINDINGS: "more data... dominates everything else"). Swapping to a
+(earlier analysis identified the limited number of users as a constraint). Swapping to a
 Sentiment140 subsample with ~26× more users should finally let the model
 beat baselines convincingly, without any model changes.
 **Setup:** Sentiment140 (1.6M tweets, 2009, user handles + timestamps),

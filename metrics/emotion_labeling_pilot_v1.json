@@ -1,0 +1,63 @@
+{
+  "experiment": "Existing-post multi-label labeling pilot",
+  "date": "2026-10-15",
+  "model": "SamLowe/roberta-base-go_emotions",
+  "model_commit": "d75048347613a25d77de8cf6412eaae9fa7b26be",
+  "source": "data/raw/Mental-Health-Twitter.xls",
+  "source_sha256": "72014a80a7f5f463742456415ed0a7ff65768252ff60c3b15aefbabd80e1c40c",
+  "review_sample_sha256": "8ea9ca9c3362de685d220a40f2de1590572a3e710ad6aa3c556de66d2dd9dac6",
+  "text_column": "post_text",
+  "threshold": 0.5,
+  "schema": "goemotions-multilabel-v1",
+  "summary": {
+    "rows": 400,
+    "status_counts": {
+      "labeled": 102,
+      "neutral": 235,
+      "uncertain": 59,
+      "review_needed": 4
+    },
+    "label_counts": {
+      "admiration": 7,
+      "amusement": 12,
+      "anger": 2,
+      "annoyance": 4,
+      "approval": 8,
+      "caring": 2,
+      "confusion": 4,
+      "curiosity": 13,
+      "desire": 4,
+      "disappointment": 2,
+      "disapproval": 4,
+      "disgust": 2,
+      "embarrassment": 0,
+      "excitement": 2,
+      "fear": 1,
+      "gratitude": 15,
+      "grief": 0,
+      "joy": 2,
+      "love": 9,
+      "nervousness": 0,
+      "optimism": 7,
+      "pride": 0,
+      "realization": 0,
+      "relief": 0,
+      "remorse": 0,
+      "sadness": 8,
+      "surprise": 2,
+      "neutral": 239
+    },
+    "truncated": 0
+  },
+  "multiple_non_neutral_labels": 4,
+  "human_reviewed_rows": 0,
+  "quality_metrics": null,
+  "limitations": [
+    "Inference pilot, not an accuracy benchmark or an improvement claim",
+    "No human labels yet; no comparison against the historical six-class labeler",
+    "Random sample does not ensure rare-label coverage",
+    "English model; corpus language and context need human review",
+    "Shared threshold is provisional; related groups are display aids only",
+    "Historical cleaned labels were not used as ground truth"
+  ]
+}

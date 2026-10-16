@@ -10,7 +10,7 @@ in one place. Layout:
         src/            -- this directory
         models/         -- *.keras
         metrics/        -- metrics_*.json
-        docs/           -- README, FINDINGS, handoff, notebook
+        docs/           -- labeling/workbench guides, historical experiments, notebook
 """
 from __future__ import annotations
 

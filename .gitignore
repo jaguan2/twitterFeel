@@ -30,6 +30,9 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+.venv-workbench/
+.workbench-deps/
+TwitterFeel.exe
 
 # Pipeline / install logs
 *.log

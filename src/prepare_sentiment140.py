@@ -2,8 +2,8 @@
 
 Sentiment140 (Go, Bhayani & Huang 2009) is a 1.6M-tweet corpus with user
 handles and timestamps — ~6,200 users have the >=20 tweets our windowing
-needs, vs 54 users in the Mental-Health-Twitter corpus. FINDINGS.md ranks
-"more users" as the top-impact fix, so this script adapts that corpus to
+needs, vs 54 users in the Mental-Health-Twitter corpus. Earlier experiments
+identified limited user coverage, so this script adapts that corpus to
 the existing pipeline.
 
 Reads the raw training CSV (no header: target, tweet_id, date, flag, user,

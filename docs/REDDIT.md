@@ -1,4 +1,9 @@
-# Reddit corpus — setup and caveats
+# Historical Reddit importer and forecasting workflow
+
+This reference documents the earlier corpus importer and next-post experiments.
+For current existing-post labeling, start with the [README](../README.md) and
+[annotation guide](EMOTION_LABELING.md). The importer remains available, but
+the commands below use the historical six-class labeling and forecasting path.
 
 Extending the next-post emotion task from Twitter to Reddit. The modeling
 pipeline is unchanged: [prepare_reddit.py](../src/prepare_reddit.py) adapts a
@@ -52,13 +57,13 @@ multi-GB dump.
 
 ## Running it
 
-The commands below reproduce the V3 route. For current modeling, use
+The commands below reproduce the V3 route. To reproduce V4 modeling, use
 [V4.md](V4.md) after labeling and embedding the imported CSV. The importer
 now stages text in temporary SQLite storage before sampling authors;
 `--budget` bounds final output approximately, not temporary disk use.
 
 ```bash
-pip install -r requirements.txt          # zstandard is needed for .zst dumps
+pip install -r requirements-forecasting.txt  # zstandard is needed for .zst dumps
 
 python src/prepare_reddit.py RC_2019-01.zst
 python src/generate_dataset.py    data/interim/dataset_reddit_unlabeled.csv \
@@ -78,8 +83,7 @@ the streaming read), `--exclude-subreddits`.
 1. **Labeler domain shift.** `generate_dataset.py` runs a DistilBERT trained
    on `dair-ai/emotion` — short, tweet-shaped text — truncated at 128 tokens.
    Reddit comments are longer and differently registered, so labels are
-   noisier here than on Twitter, compounding the label-noise constraint
-   already ranked #3 in [FINDINGS.md](FINDINGS.md). `--max-words 60` narrows
+   potentially noisier here than on Twitter. `--max-words 60` narrows
    the gap; it does not close it. A Reddit-domain labeler is a possible
    experiment, not an established fix. GoEmotions would require an explicit
    mapping policy for its broader, multilabel taxonomy and neutral examples;

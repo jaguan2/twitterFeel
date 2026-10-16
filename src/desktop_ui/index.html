@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TwitterFeel — Research workspace</title>
+    <script>
+      const initialTheme = __INITIAL_THEME__;
+      document.documentElement.dataset.theme = initialTheme === "system"
+        ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+        : initialTheme;
+    </script>
+    <style>
+      __APP_CSS__
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="boot">
+        <div class="boot-mark">tf</div>
+        <h1>TwitterFeel</h1>
+        <p>Opening your research workspace…</p>
+        <span class="spinner"></span>
+      </div>
+    </div>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <dialog id="dialog" aria-label="Post details"></dialog>
+    <script>
+      __APP_JS__;
+    </script>
+  </body>
+</html>

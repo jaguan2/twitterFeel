@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "name": "TwitterFeel Research Workbench",
+  "released": "2026-10-15",
+  "changes": [
+    "Native Windows research application",
+    "Versioned dataset imports from files or pasted text",
+    "Separate emotion and sentiment analysis with saved model provenance",
+    "Evidence summaries and researcher observations",
+    "Blind practice reviews with searchable emotion definitions",
+    "Development benchmark comparisons against human reference labels",
+    "Grouped threshold refinement and explicit model-specific research profiles",
+    "Local ModernBERT research option with paired model comparison"
+  ]
+}

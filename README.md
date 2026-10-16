@@ -1,152 +1,162 @@
-# TwitterFeel — Predicting Twitter Emotions from Tweet History
+# TwitterFeel Research Workbench · v0.2.0
 
-**Current development: [V4 workflow](docs/V4.md).** V4 adds audited data
-preparation, historical emotion features, shared user-disjoint development
-folds, stronger baselines, per-user metrics and reproducible run artifacts.
-Test scoring is opt-in. V1–V3 scripts and results below are retained for
-historical reproduction; their scores are not directly comparable to V4.
+TwitterFeel is a local Windows research app for **labeling emotions and sentiment
+in existing posts**. Import your own text, run pretrained models, inspect their
+answers, review examples, and save observations with the evidence.
 
-Start with the existing local data (legacy embeddings require explicit opt-in):
+**Open `TwitterFeel.exe` in this project folder.** It opens its own desktop
+window using WebView2 and a direct Python bridge. The desktop app starts no
+HTTP server or browser tab. Keep the EXE with this checkout and its environment;
+it is a launcher for the installed app, not a portable installer.
+
+## First session
+
+1. **Datasets:** choose a file, paste data, or use **Paste from clipboard**.
+   Preview it, choose the column containing the post text, optionally map a user
+   identifier, and save a dataset version. Supported inputs are UTF-8 CSV, TSV,
+   JSONL, or TXT with one post per line, up to **20 MB and 100,000 rows**.
+2. **Run analysis:** choose that saved version, a run name, and an emotion
+   threshold. Keep **Also analyze sentiment** selected to run the separate
+   sentiment classifier. Start the analysis and follow its progress. Keep the
+   app open until the run completes.
+3. **Data explorer:** read posts alongside the selected emotions, model scores,
+   sentiment, and review flags. Several emotions can appear in one post.
+4. **Findings & notes:** read plain-English descriptions of the counts and their
+   limits. Add your own titled observations under your reviewer name, then export
+   the report and notes. Automatic descriptions and authored observations remain
+   separate.
+5. **Label review / Experiments:** build an independent human reference and
+   compare the model's answers against it before claiming labeling quality.
+
+Importing saves data; it does not run a model. Existing repository experiments
+remain available for inspection, but they are not automatically imported as your
+research data. Saving the same dataset name again creates another immutable
+version. Earlier imports and completed analyses stay available.
+
+For a quick TXT example, paste these lines and select TXT:
+
+```text
+I'm excited to move, but scared to leave everyone behind.
+The meeting starts at three.
+I'm not angry; I'm disappointed.
+```
+
+The first example illustrates why multiple emotion labels may be useful. It
+does not guarantee the current model will detect both emotions.
+
+## Setup on another checkout
+
+Use Python 3.12 and the Microsoft Edge WebView2 Runtime. From the repository root:
 
 ```powershell
-python src/preprocess_v4.py data/interim/dataset_godknowswhat.csv data/interim/tweet_embeddings.npy data/interim/windows_v4_mht_w10.npz --allow-unverified-embeddings
-python src/train_v4.py data/interim/windows_v4_mht_w10.npz --out runs/v4_binary_baselines --task binary
-python -m unittest discover -s tests -v
+python -m venv --system-site-packages .venv-workbench
+.venv-workbench/Scripts/python.exe -m pip install -r requirements-desktop.txt
+.venv-workbench/Scripts/python.exe src/setup_models.py --task all
 ```
 
-Use new output names for subsequent runs. See [docs/V4.md](docs/V4.md) for
-probability generation, LSTM feature comparisons and final test evaluation.
+The last command installs both pinned pretrained models and reuses complete
+matching downloads. It does not install Python packages. Use `--task emotion`
+for emotion-only analysis or `--task sentiment` to add sentiment later. Model
+setup needs Internet access when files are missing; analysis uses local files
+and processes post text locally.
 
-Given a Twitter user's last 9 tweets, predict the emotion of their 10th tweet.
+If needed, rebuild the native EXE with `build-exe.cmd`. For development, run
+`.venv-workbench/Scripts/python.exe src/desktop_app.py` directly.
 
-TwitterFeel originated from the idea of detecting symptoms of depression on
-social media. We shifted to general emotion prediction because the team isn't
-clinically qualified to make mental-health claims.
+## What the models mean
 
-**Tech:** TensorFlow / Keras 3, PyTorch (for HuggingFace embedding generation),
-scikit-learn, pandas, NumPy, HuggingFace Transformers.
+Published human annotations provide a larger benchmark than the initial synthetic
+examples. See [public datasets](docs/PUBLIC_DATASETS.md) for GoEmotions and the
+Twitter-specific SemEval comparison. The **Experiments** page keeps published
+reference results separate from your own blind review. A model's training
+dataset can support an in-domain reproduction; it does not establish accuracy
+on your uploads. Threshold selection uses development data only.
 
-## Emotion mapping
+The [refinement report](docs/THRESHOLD_REFINEMENT.md) compares finer cutoffs,
+per-emotion cutoffs, and a ModernBERT research candidate on the same development
+posts. In **Run analysis**, choose the emotion model and optionally its matching
+saved threshold profile. RoBERTa with manual shared thresholds remains the
+default. Model selection and profile fingerprints are saved with every new run.
+
+For your own posts, begin with the 30-post practice round and the searchable
+emotion definitions in **Label review**. No model suggestions become human
+reference labels automatically.
+
+| Output | Plain-English meaning |
+| --- | --- |
+| Emotion labels | Possible expressions such as joy, fear, sadness, or excitement; several labels may pass independently. |
+| Neutral emotion result | Neutral passed and no emotion passed at the chosen threshold. This is still a model judgment. |
+| Uncertain / needs review | No label passed, labels conflicted, or text was truncated. |
+| Sentiment | A separate prediction of negative, neutral, or positive overall tone. It is not calculated by grouping emotion labels. |
+| Support score | Strength of model support for a label, not emotional intensity or proven certainty about the author. |
+
+Emotion uses [SamLowe's GoEmotions RoBERTa model](https://huggingface.co/SamLowe/roberta-base-go_emotions),
+with 27 emotion categories and neutral. Sentiment uses
+[Cardiff NLP's English Twitter RoBERTa model](https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment-latest).
+Their different training tasks mean sentiment and emotion can disagree without
+being directly contradictory.
+
+**Running analysis applies already trained models. It does not train or improve
+a model on your imported data.** Accuracy on your posts has not been
+demonstrated. Mixed emotions, sarcasm, quotation, negation, language differences,
+and missing context require human inspection. Counts and automatic findings
+describe model behavior; they do not establish causes, diagnoses, or how a person
+actually feels.
+
+## Versioning and saved work
+
+The app version is recorded in [`app_version.json`](app_version.json) and shown
+in the sidebar/About dialog. Imports retain exact UTF-8 source bytes, column
+mapping, row identity, content hashes, dataset version, and app version. Runs
+save predictions, counts, settings, dataset provenance, model revisions/file
+hashes, and package versions. Updating the app does not relabel older results.
+
+| Location | Contents |
+| --- | --- |
+| `runs/workbench/datasets/` | Immutable imported dataset versions and source copies |
+| `runs/analyses/` | New analysis runs, predictions, summaries, and configurations |
+| `runs/workbench/reviews.sqlite` | Separate reviewers' append-only label judgments |
+| `runs/workbench/findings.sqlite` | Authored research observations |
+| `runs/workbench/exports/` | Exported reviews and Markdown/JSON findings |
+| `runs/workbench/evaluations/` | Human-reference snapshots and metrics |
+| `runs/model_cache/` | Downloaded pretrained models and setup provenance |
+
+These local artifacts are gitignored. Back up `runs/` to preserve your research.
+The [workbench guide](docs/WORKBENCH.md) explains the complete workflow and
+remaining limitations; [the annotation guide](docs/EMOTION_LABELING.md) defines
+the emotion vocabulary and human-review process.
+
+## Command-line and historical work
+
+The current code is grouped by responsibility:
+
+| Files | Purpose |
+| --- | --- |
+| `src/desktop_app.py`, `desktop_api.py`, `desktop_ui/` | Native window, app actions, interface |
+| `src/analysis_engine.py`, `analysis_jobs.py` | Shared local models and background analysis |
+| `src/research_workspace.py`, `review_protocol.py`, `workbench_data.py` | Datasets, findings, review persistence, and practice rounds |
+| `src/benchmark.py`, `public_benchmark.py`, `threshold_tuning.py`, `compare_models.py` | Reference evaluation and model comparisons |
+| `src/check_labeling.py`, `check_research.py`, `tests/` | Diagnostics and automated checks |
+| `src/preprocess*.py`, `train*.py`, `evaluation.py`, `twitter_feel_plus/` | Historical forecasting and sadness-pattern research |
+
+`src/label_posts.py` still provides `sample`, `label`, and `evaluate` commands for
+the emotion-only workflow. The desktop application is the single supported UI;
+`build-exe.cmd` rebuilds its launcher.
+
+Earlier research predicted a future post's machine-generated label from posting
+history. It answers a different question. Reproduction material remains in
+[V4](docs/V4.md), [the experiment log](docs/EXPERIMENTS.md),
+[Reddit ingestion](docs/REDDIT.md), and [the sadness-pattern subproject](twitter_feel_plus/README.md).
+Its TensorFlow/LSTM dependencies are in `requirements-forecasting.txt`; existing-post
+analysis needs no temporal windows, embeddings, or LSTM training.
+
+## Checks
+
+```powershell
+.venv-workbench/Scripts/python.exe -m unittest discover -s tests -v
+TwitterFeel.exe --smoke-test runs/workbench/native-check.json
 ```
-0 sadness   3 anger
-1 joy       4 fear
-2 love      5 surprise
-```
 
-Binary valence collapse used in some experiments:
-- positive = {joy, love, surprise}
-- negative = {sadness, anger, fear}
-
-## 📁 Project structure
-
-```
-twitterFeel/
-├── data/
-│   ├── raw/                    # source corpus (Mental-Health-Twitter.xls, cleaned_*)
-│   └── interim/                # generated: labeled CSV, embeddings, windowed npz
-├── src/
-│   ├── paths.py                # shared filesystem layout — all scripts import from here
-│   ├── prepare_sentiment140.py # adapt the Sentiment140 corpus into the pipeline schema
-│   ├── prepare_reddit.py       # adapt a Pushshift Reddit dump into the pipeline schema
-│   ├── generate_dataset.py     # DistilBERT 6-class emotion label per tweet
-│   ├── generate_embeddings.py  # MiniLM 384-d sentence embedding per tweet
-│   ├── preprocess.py           # V1 windows (notebook replica)
-│   ├── preprocess_v2.py        # V2: embeddings + stride-1 sliding windows
-│   ├── preprocess_v3.py        # V3: + cyclic time features, configurable window size
-│   ├── train.py                # V1 LSTM, 6-class
-│   ├── train_v2.py             # V2 LSTM, 6-class
-│   ├── train_binary.py         # V2 binary valence (honest user-level split)
-│   ├── train_leaky_binary.py   # V2 binary valence (leaky row-level split)
-│   └── train_v3.py             # V3: 6/4-class or binary, LSTM or BiLSTM+attention
-├── models/                     # trained checkpoints (emotion_*.keras)
-├── metrics/                    # metrics_*.json, one per checkpoint (matching names)
-├── docs/
-│   ├── EXPERIMENTS.md          # per-iteration research log (E1–E14), hypothesis-first
-│   ├── REDDIT.md               # Reddit corpus: acquisition, commands, caveats
-│   ├── FINDINGS.md             # full results + investigation of the original F1=0.82 claim
-│   ├── handoff.md              # handoff notes / remaining work
-│   └── CAP4773_fin_1.ipynb     # original course notebook the project started from
-├── twitter_feel_plus/          # sustained-sadness signal subproject (see its README)
-└── requirements.txt            # pinned deps (TF 2.16+ for Python 3.12)
-```
-
-## Quick start
-
-```bash
-pip install -r requirements.txt
-
-# One-time data generation (~20 min on CPU)
-python src/generate_dataset.py        # DistilBERT 6-class emotion labels
-python src/generate_embeddings.py     # MiniLM 384-d sentence embeddings
-
-# Build V3 windowed features (15-history)
-python src/preprocess_v3.py 16
-
-# Train binary BiLSTM+attention
-python src/train_v3.py windows_v3_w16.npz --binary --bilstm
-```
-
-All scripts read/write through `src/paths.py`; no path arguments needed
-beyond the npz basename for `train_v3.py`.
-
-## Working with other corpora
-
-The pipeline is platform-agnostic. Everything downstream of ingest depends on
-just three columns — `user_id`, `post_created`, `cleaned_text` — so a new
-source needs only a `prepare_*.py` that emits them; a dataset *tag* then
-carries it through the rest unchanged:
-
-```bash
-python src/prepare_reddit.py RC_2019-01.zst          # -> dataset_reddit_unlabeled.csv
-python src/generate_dataset.py    data/interim/dataset_reddit_unlabeled.csv \
-                                  data/interim/dataset_reddit.csv
-python src/generate_embeddings.py data/interim/dataset_reddit_unlabeled.csv \
-                                  data/interim/tweet_embeddings_reddit.npy
-python src/preprocess_v3.py 10 reddit                # -> windows_reddit_w10.npz
-python src/train_v3.py windows_reddit_w10.npz --binary
-```
-
-Corpora currently supported: **Twitter** (Mental-Health-Twitter, the default),
-**Sentiment140** via `prepare_sentiment140.py`, and **Reddit** via
-`prepare_reddit.py` (streams Pushshift `.zst`/`.bz2`/`.gz` dumps). See
-[docs/REDDIT.md](docs/REDDIT.md) for acquisition and the caveats that affect
-how Reddit results should be read.
-
-## Historical V1–V3 results (user-level split)
-
-Two corpora: **MHT** = the original Mental-Health-Twitter set (54 users),
-**s140** = a Sentiment140 subsample (1,405 users). Baselines shift with the
-corpus, so compare within a row, not across.
-
-| Task | Corpus | Best model | Test acc | Weighted F1 | Beats baselines? |
-|---|---|---|---:|---:|---|
-| 6-class emotion | MHT | V3 LSTM w10, `--class-weight sqrt` | **0.461** | **0.410** | ✓ +5.6 pp over majority (0.405) — but see caveat |
-| 4-class emotion (drop love + surprise) | MHT | V3 LSTM w10, balanced | 0.457 | 0.410 | ✓ +4.1 pp over majority (0.416) |
-| Binary valence | s140 | V3 LSTM w10 | 0.572 | 0.563 | ✓ +3.5 pp over majority (0.538), ROC-AUC 0.593 |
-| Binary valence | MHT | V3 LSTM w10 | 0.578 | 0.553 | ≈ tied with majority (0.568) |
-| Binary valence (leaky row-level split, for comparison) | MHT | V2 LSTM | 0.595 | 0.595 | ✓ +2.7 pp over majority |
-
-**The strongest honest result is s140 binary** — the only configuration that
-beats both majority and persistence with a supporting ROC-AUC, and the
-evidence that the original 38-user constraint really was binding.
-
-**Caveat on the 6-class row.** Softening class weights (E14) lifts accuracy
-from 0.389 to 0.461, but the per-class report shows the gain comes from the
-model committing harder to the two dominant classes (anger, joy — 85% of test
-rows), not from learning the rare ones: sadness and fear f1 actually *drop*.
-Against the best constant predictor in hindsight (always-anger, 0.446) the
-margin is only +1.6 pp. Treat it as a metrics result, not a modeling
-breakthrough.
-
-The 4-class collapse drops the two rarest emotions (`love`, `surprise`),
-which together account for ~2.7% of windows and were essentially unlearnable
-in the 6-class setup (f1 ≈ 0). With that noise removed, the model beats both
-majority and persistence baselines, and it does so with the best macro F1 of
-any multi-class run (0.247) — making it the most honest multi-class result
-even though 6-class now edges it on accuracy.
-
-See [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md) for the per-experiment log
-(hypothesis recorded before results), and
-[docs/FINDINGS.md](docs/FINDINGS.md) + [docs/handoff.md](docs/handoff.md) for
-the investigation of the original `F1 = 0.82` claim (not reproducible under
-any defensible evaluation we tried) and pointers to the remaining work.
+The [actual-model diagnostic](docs/LABELING_CHECK.md) documents execution parity
+and concrete labeling weaknesses. Synthetic execution checks are separate from
+accuracy measurements against human reference labels.
