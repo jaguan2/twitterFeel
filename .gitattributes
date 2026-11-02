@@ -1,0 +1,9 @@
+# Stable source line endings across Windows checkouts and package builds.
+*.py text eol=lf
+*.cs text eol=lf
+*.js text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.cmd text eol=crlf
+src/twitterfeel/labeling/annotation_rubric.json text eol=lf
+*.ico binary

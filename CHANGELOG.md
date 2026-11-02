@@ -1,5 +1,19 @@
 # Release history
 
+## Code organization - 2026-11-02
+
+Package the implementation under `src/twitterfeel/`, grouping desktop,
+inference, labeling, workspace, evaluation, diagnostics and historical research.
+Old script paths delegate to the package. Tests use installed package imports.
+`pyproject.toml` declares dependencies/extras and console entry points; CI checks
+the grouped test suite, syntax/lint and distribution builds.
+
+Bundle the interface and rubric with the package, centralize writable workspace
+configuration, and remove directory creation during path-module imports.
+Research source hashes follow implementation files after relocation. Data,
+saved metrics, model weights and existing research reports remain in place.
+This maintenance change adds no accuracy or reproduction claim.
+
 ## Workspace cleanup — 2026-10-16
 
 Retired the duplicate browser UI, its dependencies, launch scripts, and obsolete

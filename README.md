@@ -46,12 +46,13 @@ does not guarantee the current model will detect both emotions.
 
 ## Setup on another checkout
 
-Use Python 3.12 and the Microsoft Edge WebView2 Runtime. From the repository root:
+Use Python 3.11 or 3.12 (recommended) and the Microsoft Edge WebView2 Runtime.
+From the repository root:
 
 ```powershell
-python -m venv --system-site-packages .venv-workbench
-.venv-workbench/Scripts/python.exe -m pip install -r requirements-desktop.txt
-.venv-workbench/Scripts/python.exe src/setup_models.py --task all
+python -m venv .venv-workbench
+.venv-workbench/Scripts/python.exe -m pip install -e ".[desktop]"
+.venv-workbench/Scripts/python.exe -m twitterfeel.inference.setup_models --task all
 ```
 
 The last command installs both pinned pretrained models and reuses complete
@@ -61,7 +62,10 @@ setup needs Internet access when files are missing; analysis uses local files
 and processes post text locally.
 
 If needed, rebuild the native EXE with `build-exe.cmd`. For development, run
-`.venv-workbench/Scripts/python.exe src/desktop_app.py` directly.
+`.venv-workbench/Scripts/python.exe -m twitterfeel` directly.
+Use `--workspace PATH` or set `TWITTERFEEL_HOME` to choose a different writable
+workspace. See [code organization and development](docs/ARCHITECTURE.md) for
+package installation, optional dependencies, tests and compatibility commands.
 
 ## What the models mean
 
@@ -132,16 +136,20 @@ The current code is grouped by responsibility:
 
 | Files | Purpose |
 | --- | --- |
-| `src/desktop_app.py`, `desktop_api.py`, `desktop_ui/` | Native window, app actions, interface |
-| `src/analysis_engine.py`, `analysis_jobs.py` | Shared local models and background analysis |
-| `src/research_workspace.py`, `review_protocol.py`, `workbench_data.py` | Datasets, findings, review persistence, and practice rounds |
-| `src/benchmark.py`, `public_benchmark.py`, `threshold_tuning.py`, `compare_models.py` | Reference evaluation and model comparisons |
-| `src/check_labeling.py`, `check_research.py`, `tests/` | Diagnostics and automated checks |
-| `src/preprocess*.py`, `train*.py`, `evaluation.py`, `twitter_feel_plus/` | Historical forecasting and sadness-pattern research |
+| `src/twitterfeel/desktop/` | Native window, app actions and bundled interface assets |
+| `src/twitterfeel/inference/` | Shared local models, setup and background analysis |
+| `src/twitterfeel/workspace/` | Datasets, findings, review persistence and practice rounds |
+| `src/twitterfeel/labeling/` | Labeling CLI, multi-label schema and annotation rubric |
+| `src/twitterfeel/evaluation/` | Reference evaluation, threshold refinement and model comparison |
+| `src/twitterfeel/diagnostics/`, `tests/` | Diagnostics and grouped automated checks |
+| `src/twitterfeel/research/` | Historical forecasting and sadness-pattern implementations |
+| `src/twitterfeel/common/` | Workspace configuration, resources and provenance utilities |
 
-`src/label_posts.py` still provides `sample`, `label`, and `evaluate` commands for
-the emotion-only workflow. The desktop application is the single supported UI;
-`build-exe.cmd` rebuilds its launcher.
+`python -m twitterfeel.labeling.label_posts` provides `sample`, `label`, and
+`evaluate` commands for the emotion-only workflow. Old `src/*.py` commands
+remain compatibility entry points. The desktop application is the supported UI;
+`build-exe.cmd` rebuilds its launcher. Dependencies are declared in
+`pyproject.toml`; the requirements files remain compatibility install aliases.
 
 Earlier research predicted a future post's machine-generated label from posting
 history. It answers a different question. Reproduction material remains in
@@ -149,6 +157,14 @@ history. It answers a different question. Reproduction material remains in
 [Reddit ingestion](docs/REDDIT.md), and [the sadness-pattern subproject](twitter_feel_plus/README.md).
 Its TensorFlow/LSTM dependencies are in `requirements-forecasting.txt`; existing-post
 analysis needs no temporal windows, embeddings, or LSTM training.
+
+## Study progression
+
+The [dated research record](docs/STUDY_PROGRESSION.md) backfills the study's
+findings, limitations and changes in interpretation, with source references and
+explicit uncertainty about historical dates. Read the
+[PDF](output/pdf/twitterfeel-study-progression.pdf) or update the Markdown master
+and rebuild it with `python tools/build_study_progression.py` (requires `reportlab`).
 
 ## Checks
 

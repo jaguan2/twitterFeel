@@ -1,15 +1,9 @@
-"""Generate Windows executable metadata from the application's version manifest."""
-import json
-from pathlib import Path
-import re
+"""Compatibility entry point; implementation: twitterfeel.desktop.build_version."""
+import sys
 
-root = Path(__file__).resolve().parents[1]
-version = json.loads((root / "app_version.json").read_text(encoding="utf-8"))["version"]
-if not re.fullmatch(r"\d+\.\d+\.\d+", version):
-    raise ValueError("Executable versions must use major.minor.patch")
-target = root / "runs/workbench/build-version.cs"
-target.parent.mkdir(parents=True, exist_ok=True)
-target.write_text('using System.Reflection;\n[assembly: AssemblyTitle("TwitterFeel Research Workbench")]\n'
-                  f'[assembly: AssemblyVersion("{version}.0")]\n'
-                  f'[assembly: AssemblyFileVersion("{version}.0")]\n'
-                  f'[assembly: AssemblyInformationalVersion("{version}")]\n', encoding="utf-8")
+if __name__ == "__main__":
+    from runpy import run_module
+    run_module("twitterfeel.desktop.build_version", run_name="__main__")
+else:
+    from importlib import import_module
+    sys.modules[__name__] = import_module("twitterfeel.desktop.build_version")

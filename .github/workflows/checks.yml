@@ -1,0 +1,26 @@
+name: Checks
+
+on: [push, pull_request]
+
+jobs:
+  package-and-tests:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python -m pip install -e ".[dev]"
+      - run: python -m ruff check src tests tools twitter_feel_plus
+      - run: python -m unittest discover -s tests -v
+      - run: node --check src/twitterfeel/desktop/assets/app.js
+      - run: python -m twitterfeel --help
+      - run: python -m build
+      - run: python tools/check_wheel.py

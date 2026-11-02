@@ -38,11 +38,15 @@ majority + persistence baselines; pointer to metrics JSON.
 reproduces its claimed F1 = 0.82.
 **Setup:** Mental-Health-Twitter corpus (54 users, 20k tweets),
 DistilBERT-labeled; `python src/preprocess.py && python src/train.py`.
-**Results:** acc 0.232 / wF1 0.279 vs majority 0.405, persistence 0.401
+**Results:** acc 0.232 / wF1 0.279 vs majority 0.348, persistence 0.410
 ([metrics.json](../metrics/metrics.json)).
 **Verdict:** refuted — loses to both baselines by a wide margin. The 0.82
 claim was not reproduced by these experiments. The provenance of the
 original number remains unresolved; it must not be used as a verified result.
+This later run uses one-hot inputs, class weights and user-level splits; it
+does not replay the original report's SMOTE procedure. The 2026-10-21
+[historical review](HISTORICAL_REVIEW.md) checks the original report and saved
+notebook. Baselines above were corrected to match `metrics.json` in that review.
 
 ## E2 — V2 LSTM, 6-class (text embeddings + sliding window)
 **Hypothesis:** throwing away tweet text was the notebook's biggest
@@ -70,9 +74,10 @@ quantifying the inflation explains part of the 0.82 gap.
 **Setup:** `python src/train_leaky_binary.py`.
 **Results:** acc 0.595 / wF1 0.595, ROC-AUC 0.64 — beats both baselines
 ([metrics_leaky_binary.json](../metrics/metrics_leaky_binary.json)).
-**Verdict:** supported — leakage alone is worth ~2.5 pp here and produces
-the project's best absolute number, which is exactly why user-level
-evaluation is non-negotiable. Kept as a comparison row, not a result.
+**Verdict:** the row-split run scores ~2.5 pp higher than E3, but it also changes
+class weighting and test composition. This comparison does not isolate leakage's
+causal effect or explain the original six-class SMOTE score. Kept as a comparison
+row; use user-disjoint evaluation for claims about unseen users.
 
 ## E5 — V3 LSTM, 6-class, w10 (time features)
 **Hypothesis:** a 9-tweet window can span an hour or a year; log

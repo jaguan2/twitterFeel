@@ -1,2 +1,2 @@
--r requirements-labeling.txt
-pywebview==6.2.1
+# Compatibility install file; run pip from the repository root.
+-e .[desktop]

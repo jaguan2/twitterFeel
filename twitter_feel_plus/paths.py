@@ -1,16 +1,14 @@
-"""Filesystem layout for the twitter_feel_plus subproject.
+"""Compatibility entry point; implementation: twitterfeel.research.sadness.paths."""
+import sys
 
-Pulls the source corpus (DistilBERT-labeled tweets) from the main repo's
-data/interim/ directory; writes its own results under twitter_feel_plus/results/.
-"""
-from __future__ import annotations
-
+# Support this historical script path even before an editable install.
 from pathlib import Path
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DATA_INTERIM = REPO_ROOT / "data" / "interim"
-SOURCE_CSV = DATA_INTERIM / "dataset_godknowswhat.csv"
-
-TFP_ROOT = Path(__file__).resolve().parent
-RESULTS_DIR = TFP_ROOT / "results"
-RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+if __name__ == "__main__":
+    from runpy import run_module
+    run_module("twitterfeel.research.sadness.paths", run_name="__main__")
+else:
+    from importlib import import_module
+    sys.modules[__name__] = import_module("twitterfeel.research.sadness.paths")

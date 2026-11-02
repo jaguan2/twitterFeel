@@ -200,7 +200,7 @@ Reserved test posts never enter this practice round. Human labels and notes
 start blank, even if the source already contains judgments. Repeating the same
 request returns the same practice artifact rather than another queue.
 
-Use the searchable in-app definitions from `src/annotation_rubric.json`, record
+Use the searchable in-app definitions from `src/twitterfeel/labeling/annotation_rubric.json`, record
 an evidence phrase, and note difficult distinctions. You can be the first
 reviewer now and add a second independent reviewer later. No AI-generated labels
 are used as the reference. Thirty practice judgments are not a reliable accuracy

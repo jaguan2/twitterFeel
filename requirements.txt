@@ -1,2 +1,2 @@
-# Default installation: the current native research application.
--r requirements-desktop.txt
+# Compatibility install file. Dependencies are declared in pyproject.toml.
+-e .[desktop]

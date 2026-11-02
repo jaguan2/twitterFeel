@@ -1,0 +1,280 @@
+{
+  "edition_date": "2026-10-21",
+  "timezone": "America/New_York",
+  "repository_head": "1ab5ece8be09cd22ea12a70d5f95dc3db6b63468",
+  "note": "Working-tree evidence snapshot; uncommitted documentation may be included. Hashes identify bytes, not scientific validity.",
+  "master": "docs/STUDY_PROGRESSION.md",
+  "pdf_sha256": "4ae8254b2a44e570bef83ae6b0a4de440d5b7ab61dc043bb013f1cf36a5b9c4c",
+  "sources": [
+    {
+      "source": "app_version.json",
+      "available": true,
+      "sha256": "9ed861d5dcda5a076141277ed3021ce1058079c4fb96b070c97b361790b90fcf"
+    },
+    {
+      "source": "CHANGELOG.md",
+      "available": true,
+      "sha256": "b4490046f7a8dabc195aa009a256e6d7969323c873f20e185d44e6fd2da07098"
+    },
+    {
+      "source": "data/interim/dataset_godknowswhat.csv",
+      "available": true,
+      "sha256": "abe15158a4c0f40af38af821d30336dc60f65837ccc601f96eefbc1a41a05051"
+    },
+    {
+      "source": "docs/CAP4773_fin_1.ipynb",
+      "available": true,
+      "sha256": "1bb27db20543d8de2fba015d67d5251202030fe326ee4966ebfa9be9341cccd2"
+    },
+    {
+      "source": "docs/EMOTION_LABELING.md",
+      "available": true,
+      "sha256": "92fd360da2ad56a3c92249f6b6abc7175656eec7473a301f0fbe7c22d5d7e72a"
+    },
+    {
+      "source": "docs/EXPERIMENTS.md",
+      "available": true,
+      "sha256": "93b7e27d1390d4b97f70a487c26d393c8ab5537b8ea52d355996dd605bdca3d3"
+    },
+    {
+      "source": "docs/HISTORICAL_REVIEW.md",
+      "available": true,
+      "sha256": "ca4e904d05a8849de78bf267f79756e0fddd215d47da2ab77dada1c9a752f2b9"
+    },
+    {
+      "source": "docs/LABELING_CHECK.md",
+      "available": true,
+      "sha256": "227755cfe8930ebfac84291936387bacf32cbb6f613f4632bc06abb41c7d65f9"
+    },
+    {
+      "source": "docs/PUBLIC_DATASETS.md",
+      "available": true,
+      "sha256": "71ed42af8c57512e06922473f31d0978f3e09baa1897edb5592eacd0bb77b1c6"
+    },
+    {
+      "source": "docs/REDDIT.md",
+      "available": true,
+      "sha256": "d858b30222b054f917c7cb973d8f0f37044cbb051b594b079100541be2c275f3"
+    },
+    {
+      "source": "docs/STUDY_PROGRESSION.md",
+      "available": true,
+      "sha256": "cde45575748906c3dde2b1b925fb01ec3c4db999a29e11865c57d9658024248a"
+    },
+    {
+      "source": "docs/THRESHOLD_REFINEMENT.md",
+      "available": true,
+      "sha256": "576f64ed2e7ac6d0d0b1ff5779d63d514963a6418e1dd705e5eb5ff283383fc5"
+    },
+    {
+      "source": "docs/V4.md",
+      "available": true,
+      "sha256": "42d2377f9d4ade76aa8e926278f3e94e08edb8b6057c4092c4f6885757d9d586"
+    },
+    {
+      "source": "docs/WORKBENCH.md",
+      "available": true,
+      "sha256": "41e6c50823c318bd9dde35f41faa5ef1675d45cc5ea2585e519399f45dac2412"
+    },
+    {
+      "source": "HANDOFF.md",
+      "available": true,
+      "sha256": "c9baae842933af5665be7ffae0fe05507e3803e09b913ff7441a7eb11f3603e1"
+    },
+    {
+      "source": "metrics/emotion_labeling_pilot_v1.json",
+      "available": true,
+      "sha256": "af5c8476e349504888169660d9938416e738d4167b3d5b5845a90b7e9dbbb0ee"
+    },
+    {
+      "source": "metrics/emotion_model_comparison_v1.json",
+      "available": true,
+      "sha256": "af96f66f6724776fd72a5de1e8a262aa8f01ecfd5b1d979a0c0b1cb7abce2715"
+    },
+    {
+      "source": "metrics/emotion_threshold_refinement_v1.json",
+      "available": true,
+      "sha256": "7b0e1c6183bf407ae841e87dc322c5d2a4b7295664062c7a69e1a83c2eea68f5"
+    },
+    {
+      "source": "metrics/goemotions_development_v1.json",
+      "available": true,
+      "sha256": "26eb81dcdf8ff53188d97a2e4b6f9886e7c89cb7cfb4e3d0d7d0f84a36f089e6"
+    },
+    {
+      "source": "metrics/metrics.json",
+      "available": true,
+      "sha256": "c13e4cd2ee243a15ea707ba566830c6fa32ece4ee3f1277a0ac191467e910cca"
+    },
+    {
+      "source": "metrics/metrics_binary.json",
+      "available": true,
+      "sha256": "187fe77d5734faf077bfc4d9523fa3c24a989bbe68303f18b7e535529565c04d"
+    },
+    {
+      "source": "metrics/metrics_leaky_binary.json",
+      "available": true,
+      "sha256": "603a6bc91d3a803cbfafa605b3aa8764fee6ee7fd0db91149d0a19b0baa287be"
+    },
+    {
+      "source": "metrics/metrics_v2.json",
+      "available": true,
+      "sha256": "e8f2b2337c4e15c24d14c8e86d66f6f0af17ce8bee3c13b81f24e9d4ccbcdd07"
+    },
+    {
+      "source": "metrics/metrics_v4_mht_binary_development.json",
+      "available": true,
+      "sha256": "e909d70651e1874000f8137578a81cf929ce4c2f4082e8cceac77f14acee0497"
+    },
+    {
+      "source": "metrics/metrics_windows_s140_w10_4cls_lstm.json",
+      "available": true,
+      "sha256": "057593c2039507a7599b4f3e953e457c3e6fc0ab3a383eb655e8f4f3f33bfb58"
+    },
+    {
+      "source": "metrics/metrics_windows_s140_w10_6cls_lstm.json",
+      "available": true,
+      "sha256": "aecbc14f22efe4cb3c498d7cb7e330792ee9fe41bc712f29ccfd064c01166b4a"
+    },
+    {
+      "source": "metrics/metrics_windows_s140_w10_binary_lstm.json",
+      "available": true,
+      "sha256": "3f977df88aaedde2f7f4b08e6502eeba139c89a145a4a81b394caf96f7eac432"
+    },
+    {
+      "source": "metrics/metrics_windows_v3_w10_4cls_lstm.json",
+      "available": true,
+      "sha256": "68f16452b130dc91e9629ee7da272922cf50b90f0646282d7da3f515ccbdfe6c"
+    },
+    {
+      "source": "metrics/metrics_windows_v3_w10_4cls_lstm_cwnone.json",
+      "available": true,
+      "sha256": "c922e6cf350d9958bf2a4ce6b0e07558a49a5532357eb123ac331580c06b0664"
+    },
+    {
+      "source": "metrics/metrics_windows_v3_w10_4cls_lstm_cwsqrt.json",
+      "available": true,
+      "sha256": "3fdbf911c55b55475f885f9742903b2d764bfbc1d79bcbbe77a8215b429c34e4"
+    },
+    {
+      "source": "metrics/metrics_windows_v3_w10_6cls_lstm.json",
+      "available": true,
+      "sha256": "a74f510525bd9b6787076db1d15084f194bc2e6475c8484983e509b610734c25"
+    },
+    {
+      "source": "metrics/metrics_windows_v3_w10_6cls_lstm_cwnone.json",
+      "available": true,
+      "sha256": "2b81f46373a75b30d148bb2c8b6f6edd7763b8b9a571678f464d56198a8667c9"
+    },
+    {
+      "source": "metrics/metrics_windows_v3_w10_6cls_lstm_cwsqrt.json",
+      "available": true,
+      "sha256": "244ba4aa20bca13c6040369da8c9dbab15e9efcf356462f4ee0a7e6f6c314751"
+    },
+    {
+      "source": "metrics/metrics_windows_v3_w10_binary_bilstm.json",
+      "available": true,
+      "sha256": "3d26e01fd7b7b64cf0b59fac6e3a2fcb249d43f7b1b8d31802c4d214a0569df4"
+    },
+    {
+      "source": "metrics/metrics_windows_v3_w10_binary_lstm.json",
+      "available": true,
+      "sha256": "f09c7b90202dbff0bc853706f7fc00a93c9e0d19d87c6e37a738f2cc85841f7f"
+    },
+    {
+      "source": "metrics/metrics_windows_v3_w16_4cls_lstm.json",
+      "available": true,
+      "sha256": "4bdb9737f264503a614c5cbe0f6814d8fb02a80f390c7c2c5199df282af607eb"
+    },
+    {
+      "source": "metrics/metrics_windows_v3_w16_6cls_lstm.json",
+      "available": true,
+      "sha256": "6a4a345f1efbaeff3c8b3c443c4086ab203e2aaf1f1bff071d0476adfccec01a"
+    },
+    {
+      "source": "metrics/metrics_windows_v3_w16_binary_bilstm.json",
+      "available": true,
+      "sha256": "952bf4b43fd9437811d6cd765aaefa84b0ba31f21d8bde54b7cccf101f07b991"
+    },
+    {
+      "source": "metrics/metrics_windows_v3_w16_binary_lstm.json",
+      "available": true,
+      "sha256": "e5e916758108b5cbb5d1fc6c65d312babc3b09cfd40588a86858e48d9d929178"
+    },
+    {
+      "source": "src/analysis_engine.py",
+      "available": true,
+      "sha256": "fbb2b616abf31aeb0936ce120d26a6124de57fe2dca80d1db8d93a20864e01f4"
+    },
+    {
+      "source": "src/analysis_jobs.py",
+      "available": true,
+      "sha256": "f58d7b3c78d876d59d233170aab09d13a1e064e6fb68c0a313dff9736fdb4f22"
+    },
+    {
+      "source": "src/prepare_reddit.py",
+      "available": true,
+      "sha256": "55914a97a8fe9031373c2b01733d00a99d027223df96dfcc41a7a856e988fc59"
+    },
+    {
+      "source": "src/preprocess.py",
+      "available": true,
+      "sha256": "0089a1cef86ca91a8266e99954f2627d4a04a21b83a5f8a6791c436970ec8f48"
+    },
+    {
+      "source": "src/train.py",
+      "available": true,
+      "sha256": "37e4bd25f5f452a8094cc40e37a015955a8fd575a03cc2af0ad6388bdd6e88d9"
+    },
+    {
+      "source": "src/train_binary.py",
+      "available": true,
+      "sha256": "12283a5796215aa8d1185880eaec4b8a4c6764f251d781b52f77fcb09ce72345"
+    },
+    {
+      "source": "src/train_leaky_binary.py",
+      "available": true,
+      "sha256": "9c12d4395e82750183d15bfb515999a9a163397d42e8e99976a7f7619550e3cc"
+    },
+    {
+      "source": "tools/build_study_progression.py",
+      "available": true,
+      "sha256": "97e796bb7d0e0e316b7dbac1e9976ec141819b6c9c86fd4b9da30083195e1815"
+    },
+    {
+      "source": "twitter_feel_plus/README.md",
+      "available": true,
+      "sha256": "689ee491f3fb5f1208616d92f1f9ab526c0c6cf27d6f9141b3a03ea52a2bbeb7"
+    },
+    {
+      "source": "twitter_feel_plus/results/aggregate.json",
+      "available": true,
+      "sha256": "46fbb8cbd307e7399a883de0e9135306948c92cde7106b3cffd757d6ee584af4"
+    },
+    {
+      "source": "twitter_feel_plus/results/params.json",
+      "available": true,
+      "sha256": "79e8e1073b0d661ddf075231a592cadfad3a9ca3267d7e8dfe3ed4f1a044fa0c"
+    },
+    {
+      "source": "twitter_feel_plus/results/REPORT.md",
+      "available": true,
+      "sha256": "b405c5109c37c43c98ff732b8a9c57ac58086886b4eefb72c73c41b277c0ce54"
+    },
+    {
+      "source": "twitter_feel_plus/sadness_flag.py",
+      "available": true,
+      "sha256": "1f329e3baafffb65e30f381851c62d607c7dafbc8579b193d4eab3ea50b1ba3f"
+    },
+    {
+      "source": "external/Project Proposal Presentation.pptx",
+      "available": true,
+      "sha256": "b1d354c33275b193257111923083fc5a817a6c092deb0f5a0264864dff51ef55"
+    },
+    {
+      "source": "external/Social Media Project Report.pdf",
+      "available": true,
+      "sha256": "ce61fef4fec486fed424e36e5150e3ac2ce095121ce41039160ebd33dc5a74f1"
+    }
+  ]
+}

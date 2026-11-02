@@ -1,0 +1,9 @@
+include app_version.json build-exe.cmd requirements*.txt
+include .gitattributes
+include src/*.py src/DesktopLauncher.cs
+recursive-include docs *.md *.ipynb
+recursive-include tools *.py
+recursive-include tests *.py
+recursive-include twitter_feel_plus *.py *.md *.json *.csv
+recursive-include output/pdf *.pdf *.json
+global-exclude __pycache__ *.py[cod]

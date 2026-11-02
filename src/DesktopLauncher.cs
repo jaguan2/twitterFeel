@@ -13,10 +13,10 @@ internal static class Program
         var directory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
         while (directory != null)
         {
-            if (File.Exists(Path.Combine(directory.FullName, @"src\desktop_app.py"))) return directory.FullName;
+            if (File.Exists(Path.Combine(directory.FullName, @"src\twitterfeel\desktop\app.py"))) return directory.FullName;
             directory = directory.Parent;
         }
-        throw new InvalidOperationException("Keep TwitterFeel.exe inside its project folder. The src/desktop_app.py file could not be found.");
+        throw new InvalidOperationException("Keep TwitterFeel.exe inside its project folder. The TwitterFeel package could not be found.");
     }
     private static void Log(string path, string line)
     {
@@ -37,7 +37,7 @@ internal static class Program
             string logs = Path.Combine(root, @"runs\workbench\logs");
             Directory.CreateDirectory(logs);
             string log = Path.Combine(logs, "launcher-" + DateTime.UtcNow.ToString("yyyyMMddTHHmmssfffffffZ") + ".log");
-            string command = "\"" + Path.Combine(root, @"src\desktop_app.py") + "\"";
+            string command = "-m twitterfeel";
             if (smoke) command += " --smoke-test \"" + reportPath + "\"";
             var info = new ProcessStartInfo(python, command);
             info.WorkingDirectory = root;

@@ -1,7 +1,2 @@
-# Historical forecasting and ingestion experiments, retained for reproduction.
--r requirements-labeling.txt
-imbalanced-learn>=0.12
-# TensorFlow 2.16+ supplies Python 3.12 wheels for the historical training scripts.
-tensorflow>=2.16,<2.18
-# prepare_reddit.py streams .zst Reddit dumps.
-zstandard>=0.22
+# Historical forecasting dependencies are an optional project extra.
+-e .[forecasting]

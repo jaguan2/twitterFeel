@@ -30,6 +30,11 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+.venv-dev/
+*.egg-info/
+build/
+dist/
+.ruff_cache/
 .venv-workbench/
 .workbench-deps/
 TwitterFeel.exe

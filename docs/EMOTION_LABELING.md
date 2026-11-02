@@ -111,7 +111,7 @@ examples and freeze them before evaluating held-out examples.
 ## Human annotation rubric
 
 The versioned, machine-readable rubric is
-[`src/annotation_rubric.json`](../src/annotation_rubric.json). The desktop review
+[`src/twitterfeel/labeling/annotation_rubric.json`](../src/twitterfeel/labeling/annotation_rubric.json). The desktop review
 screen displays its instructions and searchable emotion definitions. The
 working definitions below explain the same distinctions in prose.
 

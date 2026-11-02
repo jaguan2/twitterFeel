@@ -1,0 +1,94 @@
+"""Generate dataset_godknowswhat.csv with emotion labels for each tweet.
+
+Reads cleaned_Mental-Health-Twitter.xls (CSV-format despite the extension),
+runs a Hugging Face 6-class emotion classifier on the cleaned_text column,
+and writes a CSV containing every original column plus emotion (string) and
+emotion_encoded (int) using the README mapping:
+    0=sadness, 1=joy, 2=love, 3=anger, 4=fear, 5=surprise
+
+Usage:
+    python generate_dataset.py [INPUT_CSV [OUTPUT_CSV]]
+
+Defaults to the Mental-Health-Twitter corpus; pass paths to label another
+corpus (any CSV with a cleaned_text column, e.g. from prepare_sentiment140.py).
+"""
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+import pandas as pd
+import torch
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
+
+from twitterfeel.common.config import ensure_research_directories, DATA_INTERIM, DATA_RAW
+from twitterfeel.research.forecasting.emotion_schema import PROBABILITY_COLUMNS
+
+INPUT_CSV = DATA_RAW / "cleaned_Mental-Health-Twitter.xls"
+OUTPUT_CSV = DATA_INTERIM / "dataset_godknowswhat.csv"
+MODEL_NAME = "bhadresh-savani/distilbert-base-uncased-emotion"
+BATCH_SIZE = 64
+MAX_LENGTH = 128
+
+EXPECTED_ID2LABEL = {
+    0: "sadness",
+    1: "joy",
+    2: "love",
+    3: "anger",
+    4: "fear",
+    5: "surprise",
+}
+
+
+def main(input_csv: Path = INPUT_CSV, output_csv: Path = OUTPUT_CSV) -> None:
+    ensure_research_directories()
+    df = pd.read_csv(input_csv)
+    print(f"Loaded {len(df):,} rows from {input_csv.name}")
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"Using device: {device}")
+
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME).to(device)
+    model.eval()
+
+    # Sanity-check the model's label mapping matches the README's emotion encoding.
+    actual = {int(k): v for k, v in model.config.id2label.items()}
+    if actual != EXPECTED_ID2LABEL:
+        raise RuntimeError(
+            f"Model id2label {actual} does not match expected {EXPECTED_ID2LABEL}"
+        )
+
+    texts = df["cleaned_text"].fillna("").astype(str).tolist()
+    preds: list[int] = []
+    probabilities: list[list[float]] = []
+
+    with torch.no_grad():
+        for start in range(0, len(texts), BATCH_SIZE):
+            batch = texts[start : start + BATCH_SIZE]
+            enc = tokenizer(
+                batch,
+                padding=True,
+                truncation=True,
+                max_length=MAX_LENGTH,
+                return_tensors="pt",
+            ).to(device)
+            logits = model(**enc).logits
+            preds.extend(logits.argmax(dim=-1).cpu().tolist())
+            probabilities.extend(logits.softmax(dim=-1).cpu().tolist())
+            if (start // BATCH_SIZE) % 20 == 0:
+                print(f"  {start + len(batch):>6,}/{len(texts):,}")
+
+    df["emotion_encoded"] = preds
+    df["emotion"] = df["emotion_encoded"].map(EXPECTED_ID2LABEL)
+    df[PROBABILITY_COLUMNS] = probabilities
+
+    output_csv.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(output_csv, index=False)
+    print(f"\nWrote {len(df):,} rows to {output_csv.name}")
+    print("\nEmotion distribution:")
+    print(df["emotion"].value_counts())
+
+
+if __name__ == "__main__":
+    main(*[Path(a) for a in sys.argv[1:3]])
